@@ -1,0 +1,22 @@
+{
+    "label": "AOI Enumerator Submitter",
+    "submission_type": "iteration",
+    "enable_dedup": false,
+    "params" : [
+    {
+      "name": "aoi_name",
+      "from": "dataset_jpath:_id"
+    },
+    {
+      "name": "track_numbers",
+      "from": "submitter",
+      "optional": true
+    },
+    {
+      "name": "enumeration_job_version",
+      "from": "submitter",
+      "type": "jobspec_version",
+      "version_regex": "standard-product_enumerator"
+    }
+    ]
+}
