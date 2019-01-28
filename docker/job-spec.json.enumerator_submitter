@@ -2,7 +2,7 @@
   "command":"/home/ops/verdi/ops/aoi_enumerator_submitter/iterate.py",
   "imported_worker_files": {
     "/home/ops/.netrc": "/home/ops/.netrc",
-    "/home/ops/.aws": "/home/ops/.aws",
+    "/home/ops/.aws": "/home/ops/.aws"
   },
   "disk_usage":"2GB",
   "recommended-queues": ["factotum-job_worker-small"],
