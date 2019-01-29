@@ -42,24 +42,35 @@ def submit_all_jobs(poeorbs, aoi, track, queue):
 
 def determine_matching_poeorbs(poeorbs, acquisitions):
     '''determines which poeorbs are covered by an acquisition. returns a list of those poeorbs'''
-    acq_dict = build_acq_dict(acquisitions) #make a dict where the key is the starttime
-    m = build_acquisition_matrix(acq_dict) #builds a matrix of starttime endtime plots
+    acq_a_dict, acq_b_dict = build_acq_dict(acquisitions) #make a dict where the key is the starttime
+    ma = build_acquisition_matrix(acq_a_dict) #builds a matrix of starttime endtime plots
+    mb = build_acquisition_matrix(acq_b_dict)
     matching = {}
     for poeorb in poeorbs:
         starttime = int(dateutil.parser.parse(poeorb.get('_source', {}).get('starttime', False)).strftime('%s'))
         endtime = int(dateutil.parser.parse(poeorb.get('_source', {}).get('endtime', False)).strftime('%s'))
-        count = ((m > starttime) & (m < endtime)).sum()
+        if poeorb.get('_source', {}).get('metadata', {}).get('platform', False) == 'Sentinel-1A':
+            count = ((ma > starttime) & (ma < endtime)).sum()
+        else:
+            count = ((mb > starttime) & (mb < endtime)).sum()
         if count > 0:
             matching[poeorb.get('_id', False)] = poeorb
     return list(matching.values())
 
 def build_acq_dict(acquisitions):
     '''builds a dict from the input list based on starttime'''
-    acq_dict = {}
+    acq_a_dict = {}
+    acq_b_dict = {}
     for acq in acquisitions:
         starttime = int(dateutil.parser.parse(acq.get('_source', {}).get('starttime', False)).strftime('%s'))
-        acq_dict[starttime] = acq
-    return acq_dict
+        endtime = int(dateutil.parser.parse(acq.get('_source', {}).get('endtime', False)).strftime('%s'))
+        if acq.get('_source', {}).get('metadata', {}).get('platform', False) == 'Sentinel-1A':
+            acq_a_dict[starttime] = acq
+            acq_a_dict[endtime] = acq
+        else:
+            acq_b_dict[starttime] = acq
+            acq_b_dict[endtime] = acq
+    return acq_a_dict, acq_b_dict
 
 def build_acquisition_matrix(acq_dict):
     return np.array(acq_dict.keys())
@@ -76,7 +87,7 @@ def submit_enum_job(poeorb, aoi, track, queue):
         "project": "grfn",
         "dataset_version": "v2.0.0",
         "minMatch": "2",
-        "threshold_pixel": "5",
+        "threshold_pixel": 5,
         "acquisition_version": "v2.0",
         "track_numbers": str(track),
         "starttime": poeorb.get('_source', {}).get('starttime', False),
