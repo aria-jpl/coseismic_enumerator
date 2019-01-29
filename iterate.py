@@ -7,7 +7,8 @@ from datetime import datetime
 import dateutil.parser
 import numpy as np
 from hysds.celery import app
-from hysds.orchestrator import submit_job
+#from hysds.orchestrator import submit_job
+import submit_job
 
 def main():
     ctx = load_context()
@@ -65,9 +66,11 @@ def build_acquisition_matrix(acq_dict):
 
 def submit_enum_job(poeorb, aoi, track, queue):
     '''submits an enumeration job for the give poeorb, aoi, & track. if track is false, it does not use that parameter'''
-    payload = {
-      "job_type": "job:standard-product_enumerator",
-      "payload": {
+    job_name =  "job:standard-product_enumerator"
+    job_version = "master"
+    priority = 5
+    tags = '{}_T{}_enumeration'.format(aoi.get('_id', 'AOI'), track)
+    job_params = {
         "aoi_name": aoi.get('_id'),
         "workflow": "orbit_acquisition_enumerator_standard_product.sf.xml",
         "project": "grfn",
@@ -80,10 +83,8 @@ def submit_enum_job(poeorb, aoi, track, queue):
         "endtime": poeorb.get('_source', {}).get('endtime', False),
         "platform": poeorb.get('_source').get('metadata').get('platform'),
         "localize_products": lambda ds: filter(lambda x: x.startswith('s3://'), poeorb.get('_source').get('urls'))[0]
-      }
     }
-    submit_job.apply_async((payload,), queue=queue)
-
+    submit_job.main(job_name, job_params, job_version, queue, priority, tags)
 
 def get_aoi(aoi_id):
     '''returns the es object corresponding to the aoi_id'''
