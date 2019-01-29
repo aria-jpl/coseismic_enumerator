@@ -82,7 +82,7 @@ def submit_enum_job(poeorb, aoi, track, queue):
         "starttime": poeorb.get('_source', {}).get('starttime', False),
         "endtime": poeorb.get('_source', {}).get('endtime', False),
         "platform": poeorb.get('_source').get('metadata').get('platform'),
-        "localize_products": lambda ds: filter(lambda x: x.startswith('s3://'), poeorb.get('_source').get('urls'))[0]
+        "localize_products": poeorb.get('_source').get('urls')[1]
     }
     submit_job.main(job_name, job_params, job_version, queue, priority, tags)
 
