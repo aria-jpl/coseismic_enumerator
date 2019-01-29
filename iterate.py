@@ -66,7 +66,7 @@ def build_acquisition_matrix(acq_dict):
 
 def submit_enum_job(poeorb, aoi, track, queue):
     '''submits an enumeration job for the give poeorb, aoi, & track. if track is false, it does not use that parameter'''
-    job_name =  "job:standard-product_enumerator"
+    job_name =  "job-standard-product_enumerator"
     job_version = "master"
     priority = 5
     tags = '{}_T{}_enumeration'.format(aoi.get('_id', 'AOI'), track)
