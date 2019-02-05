@@ -16,7 +16,7 @@
       "name": "enumeration_job_version",
       "from": "submitter",
       "type": "jobspec_version",
-      "version_regex": "standard-product_enumerator"
+      "version_regex": "job-standard_product-s1gunw-acq_enumerator"
     },
     {
       "name": "enumerator_queue",
