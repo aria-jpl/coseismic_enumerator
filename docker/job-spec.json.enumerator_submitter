@@ -20,6 +20,10 @@
   {
     "name": "enumeration_job_version",
     "destination": "context"
+  },
+  {
+    "name": "enumerator_queue",
+    "destination": "context"
   }
   ]
 }

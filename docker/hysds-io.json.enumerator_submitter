@@ -17,6 +17,12 @@
       "from": "submitter",
       "type": "jobspec_version",
       "version_regex": "standard-product_enumerator"
+    },
+    {
+      "name": "enumerator_queue",
+      "from": "submitter",
+      "default": "standard_product-s1gunw-acq_enumerator",
+      "optional": true
     }
     ]
 }

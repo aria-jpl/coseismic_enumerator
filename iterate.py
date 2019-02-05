@@ -13,7 +13,7 @@ import submit_job
 def main():
     ctx = load_context()
     tracks = parse_tracks(ctx) #parse the tracks from context. If none are input, returns False
-    queue = ctx.get('enumerator_queue', 'standard_product_s1ifg-acq_enumerator')
+    queue = ctx.get('enumerator_queue', 'standard_product-s1gunw-acq_enumerator')
     aoi = get_aoi(ctx.get('aoi_name'))
     #get all precision orbits that intersect the AOI
     poeorbs = get_objects('poeorb', aoi)
