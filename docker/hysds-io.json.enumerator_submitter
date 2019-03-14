@@ -10,7 +10,8 @@
     {
       "name": "track_numbers",
       "from": "submitter",
-      "optional": true
+      "optional": true,
+      "placeholder": "Comma-separated track numbers. Optional."
     },
     {
       "name": "enumeration_job_version",
@@ -23,6 +24,19 @@
       "from": "submitter",
       "default": "standard_product-s1gunw-acq_enumerator",
       "optional": true
+    },
+{ 
+      "name": "minMatch",
+      "from": "submitter",
+      "type": "number",
+      "lambda": "lambda x: int(x)",
+      "default": "2"
+    },
+    { 
+      "name": "acquisition_version",
+      "from": "submitter",
+      "type": "text",
+      "default": "v2.0" 
     }
     ]
 }

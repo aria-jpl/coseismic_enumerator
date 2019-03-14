@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+From an input AOI, determines all overlapping POEORBS. For each POEORBS along all tracks, or
+given input tracks, submits an appropriate enumeration job.
+'''
+
 from __future__ import print_function
 import json
 import requests
@@ -7,27 +12,29 @@ from datetime import datetime
 import dateutil.parser
 import numpy as np
 from hysds.celery import app
-#from hysds.orchestrator import submit_job
 import submit_job
 
 def main():
     ctx = load_context()
     tracks = parse_tracks(ctx) #parse the tracks from context. If none are input, returns False
     queue = ctx.get('enumerator_queue', 'standard_product-s1gunw-acq_enumerator')
+    enumeration_job_version = ctx.get('enumeration_job_version', 'master')
     aoi = get_aoi(ctx.get('aoi_name'))
+    minmatch = ctx.get('minMatch')
+    acquisition_version = ctx.get('acquisition_version')
     #get all precision orbits that intersect the AOI
     poeorbs = get_objects('poeorb', aoi)
     #for each track in input
     if tracks is False:
         #run for all tracks
         print('Querying for all tracks...')
-        submit_all_jobs(poeorbs, aoi, False, queue)
+        submit_all_jobs(poeorbs, aoi, False, queue, enumeration_job_version, minmatch, acquisition_version)
     else:
         for track in tracks:
             print('Querying for track: {}...'.format(track))
-            submit_all_jobs(poeorbs, aoi, track, queue)
+            submit_all_jobs(poeorbs, aoi, track, queue, enumeration_job_version, minmatch, acquisition_version)
        
-def submit_all_jobs(poeorbs, aoi, track, queue):
+def submit_all_jobs(poeorbs, aoi, track, queue, version, minmatch, acquisition_version):
     '''gets all the covered acquisitions, determine intersects, & submit enum jobs'''
     #get all acquisitions covered by the AOI & optional tracks
     acquisitions = get_objects('acq', aoi, track)
@@ -38,7 +45,7 @@ def submit_all_jobs(poeorbs, aoi, track, queue):
     #submit enumeration jobs for that AOI and track
     for poeorb in matching_poeorbs:
         print('Submitting enumeration job for poeorb: {}'.format(poeorb.get('_id')))
-        submit_enum_job(poeorb, aoi, track, queue)
+        submit_enum_job(poeorb, aoi, track, queue, version, minmatch, acquisition_version)
 
 def determine_matching_poeorbs(poeorbs, acquisitions):
     '''determines which poeorbs are covered by an acquisition. returns a list of those poeorbs'''
@@ -75,10 +82,9 @@ def build_acq_dict(acquisitions):
 def build_acquisition_matrix(acq_dict):
     return np.array(acq_dict.keys())
 
-def submit_enum_job(poeorb, aoi, track, queue):
+def submit_enum_job(poeorb, aoi, track, queue, job_version, minmatch, acquisition_version):
     '''submits an enumeration job for the give poeorb, aoi, & track. if track is false, it does not use that parameter'''
-    job_name =  "job-standard_product-s1gunw-acq_enumerator"
-    job_version = "master"
+    job_name = "job-standard_product-s1gunw-acq_enumerator"
     priority = 5
     tags = '{}_T{}_enumeration'.format(aoi.get('_id', 'AOI'), track)
     job_params = {
@@ -86,9 +92,9 @@ def submit_enum_job(poeorb, aoi, track, queue):
         "workflow": "orbit_acquisition_enumerator_standard_product.sf.xml",
         "project": "grfn",
         "dataset_version": "v2.0.0",
-        "minMatch": "2",
+        "minMatch": minmatch,
         "threshold_pixel": 5,
-        "acquisition_version": "v2.0",
+        "acquisition_version": acquisition_version,
         "track_numbers": str(track),
         "starttime": poeorb.get('_source', {}).get('starttime', False),
         "endtime": poeorb.get('_source', {}).get('endtime', False),
@@ -170,8 +176,8 @@ def parse_tracks(ctx):
     or is empty'''
     tracks = ctx.get('track_numbers', False)
     if not tracks:
-         #run over all tracks
-         return False
+        #run over all tracks
+        return False
     tracks = [int(x) for x in list(set(tracks.split(',')))]
     if len(tracks) < 1:
         return False

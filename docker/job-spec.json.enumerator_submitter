@@ -24,6 +24,14 @@
   {
     "name": "enumerator_queue",
     "destination": "context"
+  },
+  {
+    "name": "minMatch",
+    "destination": "context"
+  },
+  {
+    "name": "acquisition_version",
+    "destination": "context"
   }
   ]
 }

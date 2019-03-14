@@ -6,7 +6,6 @@ Submits a standard job via a REST call
 
 from __future__ import print_function
 import os
-import re
 import json
 import argparse
 import requests
@@ -42,7 +41,7 @@ def main(job_name, job_params, job_version, queue, priority, tags):
         raise Exception('job %s not submitted successfully: %s' % (job_name, result))
 
 def parse_job_tags(tag_string):
-    if tag_string == None or tag_string == '' or (type(tag_string) is list and tag_string == []) :
+    if tag_string == None or tag_string == '' or (type(tag_string) is list and tag_string == []):
         return ''
     tag_list = tag_string.split(',')
     tag_list = ['"{0}"'.format(tag) for tag in tag_list]
