@@ -6,6 +6,7 @@ given input tracks, submits an appropriate enumeration job.
 '''
 
 from __future__ import print_function
+import sys
 import json
 import requests
 from datetime import datetime
@@ -16,11 +17,12 @@ import submit_job
 
 def main():
     ctx = load_context()
-    tracks = parse_tracks(ctx) #parse the tracks from context. If none are input, returns False
     queue = ctx.get('enumerator_queue', 'standard_product-s1gunw-acq_enumerator')
     enumeration_job_version = ctx.get('enumeration_job_version', 'master')
     aoi = get_aoi(ctx.get('aoi_name'))
-    minmatch = ctx.get('minMatch')
+    tracks = parse_tracks(ctx, aoi) #parse the tracks from context. If none are input, returns False
+    skip_days = ctx.get('skipDays', 0)
+    minmatch = ctx.get('minMatch', 2)
     acquisition_version = ctx.get('acquisition_version')
     #get all precision orbits that intersect the AOI
     poeorbs = get_objects('poeorb', aoi)
@@ -28,13 +30,13 @@ def main():
     if tracks is False:
         #run for all tracks
         print('Querying for all tracks...')
-        submit_all_jobs(poeorbs, aoi, False, queue, enumeration_job_version, minmatch, acquisition_version)
+        submit_all_jobs(poeorbs, aoi, False, queue, enumeration_job_version, minmatch, acquisition_version, skip_days)
     else:
         for track in tracks:
             print('Querying for track: {}...'.format(track))
-            submit_all_jobs(poeorbs, aoi, track, queue, enumeration_job_version, minmatch, acquisition_version)
+            submit_all_jobs(poeorbs, aoi, track, queue, enumeration_job_version, minmatch, acquisition_version, skip_days)
        
-def submit_all_jobs(poeorbs, aoi, track, queue, version, minmatch, acquisition_version):
+def submit_all_jobs(poeorbs, aoi, track, queue, version, minmatch, acquisition_version, skip_days):
     '''gets all the covered acquisitions, determine intersects, & submit enum jobs'''
     #get all acquisitions covered by the AOI & optional tracks
     acquisitions = get_objects('acq', aoi, track)
@@ -45,7 +47,7 @@ def submit_all_jobs(poeorbs, aoi, track, queue, version, minmatch, acquisition_v
     #submit enumeration jobs for that AOI and track
     for poeorb in matching_poeorbs:
         print('Submitting enumeration job for poeorb: {}'.format(poeorb.get('_id')))
-        submit_enum_job(poeorb, aoi, track, queue, version, minmatch, acquisition_version)
+        submit_enum_job(poeorb, aoi, track, queue, version, minmatch, acquisition_version, skip_days)
 
 def determine_matching_poeorbs(poeorbs, acquisitions):
     '''determines which poeorbs are covered by an acquisition. returns a list of those poeorbs'''
@@ -82,7 +84,7 @@ def build_acq_dict(acquisitions):
 def build_acquisition_matrix(acq_dict):
     return np.array(acq_dict.keys())
 
-def submit_enum_job(poeorb, aoi, track, queue, job_version, minmatch, acquisition_version):
+def submit_enum_job(poeorb, aoi, track, queue, job_version, minmatch, acquisition_version, skip_days):
     '''submits an enumeration job for the give poeorb, aoi, & track. if track is false, it does not use that parameter'''
     job_name = "job-standard_product-s1gunw-acq_enumerator"
     priority = 5
@@ -96,6 +98,7 @@ def submit_enum_job(poeorb, aoi, track, queue, job_version, minmatch, acquisitio
         "threshold_pixel": 5,
         "acquisition_version": acquisition_version,
         "track_numbers": str(track),
+        "skipDays": skip_days,
         "starttime": poeorb.get('_source', {}).get('starttime', False),
         "endtime": poeorb.get('_source', {}).get('endtime', False),
         "platform": poeorb.get('_source').get('metadata').get('platform'),
@@ -171,14 +174,19 @@ def query_es(grq_url, es_query):
         results_list.extend(results.get('hits', {}).get('hits', []))
     return results_list
 
-def parse_tracks(ctx):
+def parse_tracks(ctx, aoi):
     '''parses tracks into a list of integers from context. Returns False if the list is not supplied
     or is empty'''
     tracks = ctx.get('track_numbers', False)
     if not tracks:
-        #run over all tracks
-        return False
-    tracks = [int(x) for x in list(set(tracks.split(',')))]
+        #attempt to get them from the aoi
+        tracks = aoi.get('_source', {}).get('metadata', {}).get('track_number', False)
+        if not tracks:
+            #run over all tracks
+            return False
+    if isinstance(tracks, str if sys.version_info[0] >= 3 else basestring):
+        # if of type string, convert to a list of ints
+        tracks = [int(x) for x in list(set(tracks.split(',')))]
     if len(tracks) < 1:
         return False
     return tracks

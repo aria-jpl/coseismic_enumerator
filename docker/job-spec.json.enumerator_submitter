@@ -32,6 +32,10 @@
   {
     "name": "acquisition_version",
     "destination": "context"
+  },
+  {
+    "name": "skipDays",
+    "destination": "context"
   }
   ]
 }

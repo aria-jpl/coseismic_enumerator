@@ -25,7 +25,7 @@
       "default": "standard_product-s1gunw-acq_enumerator",
       "optional": true
     },
-{ 
+    { 
       "name": "minMatch",
       "from": "submitter",
       "type": "number",
@@ -37,6 +37,14 @@
       "from": "submitter",
       "type": "text",
       "default": "v2.0" 
+    },
+    {
+      "name": "skipDays",
+      "from": "submitter",
+      "type": "number",
+      "lambda": "lambda x: int(x)",
+      "default": "0",
+      "optional": true
     }
     ]
 }
