@@ -3,9 +3,9 @@ FROM hysds/pge-base:latest
 MAINTAINER aria-ops "jlinick@.jpl.nasa.gov"
 LABEL description="AOI Enumerator Submitter Container"
 
-USER ops
+RUN pip install numpy
 
-RUN sudo pip install numpy
+USER ops
 
 COPY . /home/ops/verdi/ops/aoi_enumerator_submitter
 
