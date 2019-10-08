@@ -31,7 +31,7 @@ def main(job_name, job_params, job_version, queue, priority, tags):
         print('submission job failed')
         r.raise_for_status()
     result = r.json()
-    if 'result' in result.keys() and 'success' in result.keys():
+    if 'result' in list(result.keys()) and 'success' in list(result.keys()):
         if result['success'] == True:
             job_id = result['result']
             print('submitted %s job version: %s job_id: %s' % (job_name, job_version, job_id))

@@ -6,6 +6,9 @@ given input tracks, submits an appropriate enumeration job.
 '''
 
 from __future__ import print_function
+from builtins import str
+from builtins import range
+from past.builtins import basestring
 import sys
 import json
 import requests
@@ -82,7 +85,7 @@ def build_acq_dict(acquisitions):
     return acq_a_dict, acq_b_dict
 
 def build_acquisition_matrix(acq_dict):
-    return np.array(acq_dict.keys())
+    return np.array(list(acq_dict.keys()))
 
 def submit_enum_job(poeorb, aoi, track, queue, job_version, minmatch, acquisition_version, skip_days):
     '''submits an enumeration job for the give poeorb, aoi, & track. if track is false, it does not use that parameter'''
@@ -146,12 +149,12 @@ def query_es(grq_url, es_query):
     all results are generated, & returns the compiled result
     '''
     # make sure the fields from & size are in the es_query
-    if 'size' in es_query.keys():
+    if 'size' in list(es_query.keys()):
         iterator_size = es_query['size']
     else:
         iterator_size = 1000
         es_query['size'] = iterator_size
-    if 'from' in es_query.keys():
+    if 'from' in list(es_query.keys()):
         from_position = es_query['from']
     else:
         from_position = 0
