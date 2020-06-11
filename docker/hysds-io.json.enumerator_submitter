@@ -22,7 +22,7 @@
     {
       "name": "enumerator_queue",
       "from": "submitter",
-      "default": "standard_product-s1gunw-acq_enumerator",
+      "default": "aria-standard_product-enumerator",
       "optional": true
     },
     { 
