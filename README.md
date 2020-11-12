@@ -1,7 +1,7 @@
 # AOI Enumerator Submitter
 
-Iterates through a given AOI and optional track, determines the relevant POEORB overlaps, then submits enumeration jobs for those POEORBS
+Iterates through orbit an determining the relevant co-event AOIs overlaps, then submits enumeration jobs for the input orbit and AOI.
 
 # Running
-Facet on an AOI, and submit a job with the optional input track string, which is a comma delimited list. Example: "42, 14, 32"
+Facet on a co-event AOI, and submit a job with the optional input track string, which is a comma delimited list. Example: "42, 14, 32"
 
