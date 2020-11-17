@@ -1,5 +1,5 @@
 {
-  "command":"/home/ops/verdi/ops/aoi_enumerator_submitter/iterate.py",
+  "command":"/home/ops/verdi/ops/coevent_enumerator_submitter/iterate.py",
   "imported_worker_files": {
     "/home/ops/.netrc": "/home/ops/.netrc",
     "/home/ops/.aws": "/home/ops/.aws"

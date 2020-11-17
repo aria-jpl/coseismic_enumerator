@@ -1,5 +1,5 @@
 {
-    "label": "AOI Enumerator Submitter",
+    "label": "Co-Event Enumerator Submitter",
     "submission_type": "iteration",
     "enable_dedup": false,
     "params" : [
