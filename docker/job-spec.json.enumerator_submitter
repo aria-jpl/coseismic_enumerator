@@ -5,18 +5,11 @@
     "/home/ops/.aws": "/home/ops/.aws"
   },
   "disk_usage":"2GB",
-  "recommended-queues": ["factotum-job_worker-small"],
+  "recommended-queues": ["s1gunw-coseismic-submitter",
+                         "s1gunw-coseismic-enumerator"],
   "soft_time_limit": 1000,
   "time_limit": 1200,
   "params" : [
-  {
-    "name": "aoi_name",
-    "destination": "context"
-  },
-  {
-    "name": "track_numbers",
-    "destination": "context"
-  },
   {
     "name": "enumeration_job_version",
     "destination": "context"
@@ -26,15 +19,7 @@
     "destination": "context"
   },
   {
-    "name": "minMatch",
-    "destination": "context"
-  },
-  {
     "name": "acquisition_version",
-    "destination": "context"
-  },
-  {
-    "name": "skipDays",
     "destination": "context"
   }
   ]

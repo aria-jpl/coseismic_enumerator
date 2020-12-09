@@ -4,47 +4,22 @@
     "enable_dedup": false,
     "params" : [
     {
-      "name": "aoi_name",
-      "from": "dataset_jpath:_id"
-    },
-    {
-      "name": "track_numbers",
-      "from": "submitter",
-      "optional": true,
-      "placeholder": "Comma-separated track numbers. Optional."
-    },
-    {
       "name": "enumeration_job_version",
       "from": "submitter",
       "type": "jobspec_version",
-      "version_regex": "job-standard_product-s1gunw-acq_enumerator"
+      "version_regex": "job-s1gunw-coseismic-submitter:develop-<YYYYMMDD>"
     },
     {
       "name": "enumerator_queue",
       "from": "submitter",
-      "default": "aria-standard_product-enumerator",
+      "default": "s1gunw-coseismic-enumerator",
       "optional": true
-    },
-    { 
-      "name": "minMatch",
-      "from": "submitter",
-      "type": "number",
-      "lambda": "lambda x: int(x)",
-      "default": "2"
     },
     { 
       "name": "acquisition_version",
       "from": "submitter",
       "type": "text",
       "default": "v2.0" 
-    },
-    {
-      "name": "skipDays",
-      "from": "submitter",
-      "type": "number",
-      "lambda": "lambda x: int(x)",
-      "default": "0",
-      "optional": true
     }
     ]
 }

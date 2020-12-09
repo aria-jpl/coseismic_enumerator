@@ -1,0 +1,29 @@
+'''module to hold the Elastic-Search query objects
+
+Rather than pollute the code with the query information, hide them behind
+a variable name.
+'''
+
+import json
+
+# the dataset will need to change
+all_active_aoi = json.loads('''
+{
+  "bool": {
+    "must": [
+      {
+        "term": {
+          "dataset.raw": "S1-GUNW-AOI_TRACK"
+        }
+      },
+      {
+        "range": {
+          "endtime": {
+            "from": "2000-01-01T00:00:00Z",
+            "to": "2200-01-01T00:00:00Z"
+          }
+        }
+      }
+    ]
+  }
+}''')
