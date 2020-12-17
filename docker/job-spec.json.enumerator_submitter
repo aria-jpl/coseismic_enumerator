@@ -1,19 +1,14 @@
 {
-  "command":"/home/ops/verdi/ops/coevent_enumerator_submitter/iterate.py",
+  "command":"/home/ops/verdi/ops/coevent_enumerator_submitter/run_pge.sh",
   "imported_worker_files": {
     "/home/ops/.netrc": "/home/ops/.netrc",
     "/home/ops/.aws": "/home/ops/.aws"
   },
   "disk_usage":"2GB",
-  "recommended-queues": ["s1gunw-coseismic-submitter",
-                         "s1gunw-coseismic-enumerator"],
+  "recommended-queues": ["s1gunw_coseismic-enumerator-submitter"],
   "soft_time_limit": 1000,
   "time_limit": 1200,
   "params" : [
-  {
-    "name": "enumeration_job_version",
-    "destination": "context"
-  },
   {
     "name": "enumerator_queue",
     "destination": "context"

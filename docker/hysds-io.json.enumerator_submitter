@@ -4,12 +4,6 @@
     "enable_dedup": false,
     "params" : [
     {
-      "name": "enumeration_job_version",
-      "from": "submitter",
-      "type": "jobspec_version",
-      "version_regex": "job-s1gunw-coseismic-submitter:develop-<YYYYMMDD>"
-    },
-    {
       "name": "enumerator_queue",
       "from": "submitter",
       "default": "s1gunw-coseismic-enumerator",

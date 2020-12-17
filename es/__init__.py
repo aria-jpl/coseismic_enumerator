@@ -12,6 +12,7 @@ this package would be the place to do that work.
 
 import hysds.celery
 import json
+import os
 import requests
 
 class ElasticSearchError(Exception):
@@ -19,7 +20,8 @@ class ElasticSearchError(Exception):
     pass
 
 
-def query (request:{}, index:str='grq_v1.0_aoitrack-earthquake',
+# pylint: disable=dangerous-default-value,too-many-arguments
+def query (request:{}, index:str='',
            es_from:int=0, size:int=1000, sort:[]=[], aggs:{}={})->[{}]:
     '''perform a query of ES
 
@@ -40,8 +42,18 @@ def query (request:{}, index:str='grq_v1.0_aoitrack-earthquake',
                'size':size,
                'sort':sort,
                'aggs':aggs}
-    grq_ip = hysds.celery.app.conf['GRQ_ES_URL'].replace(':9200', '').replace('http://', 'https://')
-    grq_url = '{0}/es/{1}/_search'.format(grq_ip, index)
+
+    if os.environ.get ('ARIA_EXTERNAL_TO_CLUSTER', False):
+        # In theory, the code below fails in the container and is for running a
+        # container outside the walled garden of the cloud
+        grq_ip = hysds.celery.app.conf['GRQ_ES_URL']
+        grq_ip = grq_ip.replace(':9200', '').replace('http://', 'https://')
+        grq_url = '{0}/es/{1}/_search'.format(grq_ip, index)
+    else:
+        # In theory, the code below here is correct for in cloud
+        grq_ip = hysds.celery.app.conf['GRQ_ES_URL']
+        grq_url = '{0}/{1}/_search'.format(grq_ip, index)
+        pass
 
     # initialize loop content
     result = []
