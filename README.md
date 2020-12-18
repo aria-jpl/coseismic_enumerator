@@ -61,7 +61,7 @@ Python 3.8.5 (default, Jul 28 2020, 12:59:40)
 
 ### Command
 ```
-ylint -d C0321,C0326,C0411,W0107,R1711 active.py footprint.py iterate.py orbit.py slc.py test.py es
+pylint -d C0321,C0326,C0411,W0107,R1711 active.py context.py footprint.py iterate.py orbit.py slc.py test.py es
 ```
 
 ### Latest Result
@@ -71,10 +71,8 @@ active.py:135:2: W0511: FIXME: need to update AOI in ES (fixme)
 ************* Module footprint
 footprint.py:17:2: W0511: FIXME: should actually do commented out code (fixme)
 ************* Module iterate
-iterate.py:39:2: W0511: FIXME: active.process() should be in a try catch block for when there (fixme)
-************* Module slc
-slc.py:37:2: W0511: FIXME: how to activate the localizer? (fixme)
+iterate.py:42:2: W0511: FIXME: active.process() should be in a try catch block for when there (fixme)
 
 ------------------------------------------------------------------
-Your code has been rated at 9.88/10 (previous run: 9.87/10, +0.00)
+Your code has been rated at 9.91/10 (previous run: 9.91/10, +0.00)
 ```

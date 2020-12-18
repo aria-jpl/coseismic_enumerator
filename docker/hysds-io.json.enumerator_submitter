@@ -4,16 +4,39 @@
     "enable_dedup": false,
     "params" : [
     {
-      "name": "enumerator_queue",
+      "name": "coverage_threshold_percent",
       "from": "submitter",
-      "default": "s1gunw-coseismic-enumerator",
-      "optional": true
+      "type": "number",
+      "lambda": "lambda i:int(i)",
+      "default": "70"
     },
-    { 
-      "name": "acquisition_version",
+    {
+      "name": "post_count",
       "from": "submitter",
-      "type": "text",
-      "default": "v2.0" 
+      "type": "number",
+      "lambda": "lambda i:int(i)",
+      "default": "3"
+    },
+    {
+      "name": "post_buffer_in_seconds",
+      "from": "submitter",
+      "type": "number",
+      "lambda": "lambda i:int(i)",
+      "default": "86400"
+    },
+    {
+      "name": "prior_count",
+      "from": "submitter",
+      "type": "number",
+      "lambda": "lambda i:int(i)",
+      "default": "3"
+    },
+    {
+      "name": "prior_buffer_in_seconds",
+      "from": "submitter",
+      "type": "number",
+      "lambda": "lambda i:int(i)",
+      "default": "86400"
     }
-    ]
+  ]
 }

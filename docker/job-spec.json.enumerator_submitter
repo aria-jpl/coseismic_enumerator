@@ -10,11 +10,23 @@
   "time_limit": 1200,
   "params" : [
   {
-    "name": "enumerator_queue",
+    "name": "coverage_threshold_percent",
     "destination": "context"
   },
   {
-    "name": "acquisition_version",
+    "name": "post_count",
+    "destination": "context"
+  },
+  {
+    "name": "post_buffer_in_seconds",
+    "destination": "context"
+  },
+  {
+    "name": "prior_count",
+    "destination": "context"
+  },
+  {
+    "name": "prior_buffer_in_seconds",
     "destination": "context"
   }
   ]
