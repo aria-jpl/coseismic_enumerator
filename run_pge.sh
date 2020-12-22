@@ -6,4 +6,4 @@ export TROPMAP_HOME=$HOME/tropmap
 
 # source environment
 source $HOME/verdi/bin/activate
-/home/ops/verdi/ops/coevent_enumerator_submitter/iterate.py
+/home/ops/verdi/ops/coseismic_enumerator/iterate.py

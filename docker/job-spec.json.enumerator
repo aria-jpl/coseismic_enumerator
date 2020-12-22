@@ -1,5 +1,5 @@
 {
-  "command":"/home/ops/verdi/ops/coevent_enumerator_submitter/run_pge.sh",
+  "command":"/home/ops/verdi/ops/coseismic_enumerator/run_pge.sh",
   "imported_worker_files": {
     "/home/ops/.netrc": "/home/ops/.netrc",
     "/home/ops/.aws": "/home/ops/.aws"
