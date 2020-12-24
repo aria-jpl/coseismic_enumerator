@@ -1,9 +1,12 @@
 '''encapsulate all that it takes to get an SLC localized'''
 
+import es
 import footprint
 import json
 import orbit
 import os
+
+VERSION = 'v0.0'
 
 def load (primaries:[], secondaries:[], iteration:int):
     '''load SLC from DAACs if it is not already here
@@ -24,6 +27,7 @@ def load (primaries:[], secondaries:[], iteration:int):
             pass
         label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_' + str(iteration)
         label += '-' + pacq['id']
+        es.purge (label, VERSION)
 
         if not os.path.exists (label): os.makedirs (label, 0o755)
 
@@ -31,7 +35,7 @@ def load (primaries:[], secondaries:[], iteration:int):
             json.dump (md_acqlist, file, indent=2)
             pass
         with open (os.path.join (label, label + '.dataset.json'), 'tw') as file:
-            json.dump ({'id':label, 'label':label, 'version':'v0.0'},
+            json.dump ({'id':label, 'label':label, 'version':VERSION},
                        file, indent=2)
             pass
         pass

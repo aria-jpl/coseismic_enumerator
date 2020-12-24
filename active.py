@@ -132,8 +132,9 @@ def update (aoi):
     Much of the AOI processing updates the the state information and it needs
     to be recorded in ES.
     '''
-    # FIXME: need to update AOI in ES
+    # FIXME: need to update AOI in ES not create a zesty-test-data
     label = 'zesty-test-data-' + aoi['id']
+    es.purge (label, aoi['version'])
 
     if not os.path.exists (label): os.makedirs (label, 0o755)
 

@@ -70,6 +70,24 @@ COLLATE_ACQUISITIONS = '''
   }
 }'''
 
+FIND_ID = '''
+{
+  "bool": {
+    "must": [
+      {
+        "term": {
+          "id.raw": ""
+        }
+      },
+      {
+        "term": {
+          "version.raw": ""
+        }
+      }
+    ]
+  }
+}'''
+
 PAIR_ACQUISITION_WITH_ORBIT = '''
 {
   "bool": {
@@ -107,6 +125,13 @@ def collate_acquisitions (begin, end, location):
     must[-3]['geo_shape']['location']['shape'] = location
     must[-2]['range']['endtime']['gt'] = begin
     must[-1]['range']['starttime']['lt'] = end
+    return request
+
+def find_id (identity:str, version:str):
+    '''helper function to build request'''
+    request = json.loads (FIND_ID)
+    request['bool']['must'][0]['term']['id.raw'] = identity
+    request['bool']['must'][1]['term']['version.raw'] = version
     return request
 
 def pair_acquisition_with_orbit (begin, end, resorb=False):

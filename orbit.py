@@ -2,11 +2,16 @@
 
 import datetime
 import es.request
+import hysds.utils
 import isce  # pylint: disable=unused-import
 import os
 
 from isceobj.Sensor.TOPS.BurstSLC import BurstSLC
 from isceobj.Sensor.TOPS.Sentinel1 import Sentinel1 as Sentinel
+
+class NoOrbitsAvailable(Exception):
+    '''Isolate an exception for when acquisitions arrive prior to orbits'''
+    pass
 
 def extract (begin:str, end:str, orbit:Sentinel)->BurstSLC:
     '''Function that will extract the sentinel-1 state vector information
@@ -43,26 +48,30 @@ def fetch (acquisition:dict)->{}:
         mat = [o['_id'].startswith (sat) for o in orb]
         pass
 
-    if not orb and not any(mat): raise RuntimeError('No orbits could be found')
+    if not orb and not any(mat): raise NoOrbitsAvailable(acquisition['id'])
 
     return orb[mat.index(True)]['_source']
 
+_CACHE = {}
 def load (eof:dict)->Sentinel:
     '''load the file if not already available and return an ISCE object'''
-    filename = eof['id'] + '.EOF'
+    filename = os.path.join (eof['id'], eof['id'] + '.EOF')
 
-    if not os.path.isfile (filename):
+    if eof['id'] not in _CACHE:
+        print ('    download remote information')
         url = eof['urls'][[s[:4] for s in eof['urls']].index ('s3:/')]
-        url = os.path.join (url, filename)
-        print(url)
+        local_filename = hysds.utils.download_file (url, eof['id'])
+        print ('    local file:', local_filename)
+
+        if not os.path.isfile (filename): raise NoOrbitsAvailable(eof['id'])
+
+        sentinel = Sentinel()  # see import statements as this an ISCE object
+        sentinel.configure()
+        sentinel.orbitFile = filename
+        _CACHE[eof['id']] = sentinel
         pass
 
-    # initiate a Sentinel-1 product instance
-    sentinel = Sentinel()  # see import statements as this an ISCE object
-    sentinel.configure()
-    sentinel.orbitFile = filename
-    print("Orbit File : %s" % filename)
-    return sentinel
+    return _CACHE[eof['id']]
 
 def test():
     '''simple unit test'''

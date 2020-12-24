@@ -11,6 +11,8 @@ this package would be the place to do that work.
 '''
 
 import hysds.celery
+import hysds.dataset_ingest
+import hysds.utils
 import json
 import os
 import requests
@@ -19,6 +21,24 @@ class ElasticSearchError(Exception):
     '''Used to signal that the request to ES failed in some way'''
     pass
 
+def purge (identity:str, version:str):
+    '''purge a record from S3 so that it can be overwritten'''
+    # pylint: disable=import-outside-toplevel
+    import es.request  # avoid a load time circular import problem
+
+    item = query (es.request.find_id (identity, version))
+
+    if len (item) > 1:
+        raise ElasticSearchError('The ID '+identity+' is not unique within ES')
+
+    if len (item) == 1:
+        item = item[0]['_source']
+        url = item['urls'][[s[:4] for s in item['urls']].index ('s3:/')]
+        params = hysds.utils.get_download_params (url)
+        hysds.dataset_ingest.unpublish_dataset (url, params)
+        pass
+
+    return
 
 # pylint: disable=dangerous-default-value,too-many-arguments
 def query (request:{}, index:str='',
