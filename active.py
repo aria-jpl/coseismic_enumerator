@@ -122,6 +122,7 @@ def process (aoi):
                 pass
 
             update (aoi)
+            begin = datetime.datetime.fromisoformat(aoi[EP]['previous'][:-1])
         else: begin += step
         pass
     return
