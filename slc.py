@@ -21,7 +21,9 @@ def load (primaries:[], secondaries:[], iteration:int):
         md_acqlist = {'master_acquisitions':[pacq['id']],
                       'slave_acquisitions':[]}
         for sfp,sacq in zip(fps['second'],secondaries):
-            if pfp.Intersection (sfp).Area() > 0:
+            intersection = pfp.Intersection (sfp)
+
+            if intersection and intersection.Area() > 0:
                 md_acqlist['slave_acquisitions'].append (sacq['id'])
                 pass
             pass

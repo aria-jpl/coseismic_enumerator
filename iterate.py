@@ -46,11 +46,12 @@ def main():
     '''the main processing block -- find and loop over all active AOIs'''
     for response in es.query (es.request.ALL_ACTIVE_AOI):
         aoi = response['_source']
-        print ('begin:', aoi['id'])
+        print ('-> begin:', aoi['id'])
         initialize (aoi)
         try: active.process (aoi)
-        except orbit.NoOrbitsAvailable: traceback.print_last()
-        print ('done:', aoi['id'])
+        except orbit.NoOrbitsAvailable: traceback.print_exc()
+        orbit.cleanup()
+        print ('-> done:', aoi['id'])
         pass
     return
 

@@ -13,6 +13,17 @@ class NoOrbitsAvailable(Exception):
     '''Isolate an exception for when acquisitions arrive prior to orbits'''
     pass
 
+def cleanup():
+    '''Remove downloaded orbit files so HYSDS does not try to upload them'''
+    for dirname in _CACHE:
+        for filename in os.listdir (dirname):
+            os.unlink (os.path.join (dirname, filename))
+            pass
+        os.rmdir (dirname)
+        pass
+    _CACHE.clear()
+    return
+
 def extract (begin:str, end:str, orbit:Sentinel)->BurstSLC:
     '''Function that will extract the sentinel-1 state vector information
 
@@ -55,13 +66,13 @@ def fetch (acquisition:dict)->{}:
 _CACHE = {}
 def load (eof:dict)->Sentinel:
     '''load the file if not already available and return an ISCE object'''
-    filename = os.path.join (eof['id'], eof['id'] + '.EOF')
+    filename = os.path.join (eof['id'], eof['id'].split('-')[0] + '.EOF')
 
     if eof['id'] not in _CACHE:
-        print ('    download remote information')
+        print ('->     download remote information')
         url = eof['urls'][[s[:4] for s in eof['urls']].index ('s3:/')]
-        local_filename = hysds.utils.download_file (url, eof['id'])
-        print ('    local file:', local_filename)
+        hysds.utils.download_file (url, eof['id'])
+        print ('->     local file:', filename)
 
         if not os.path.isfile (filename): raise NoOrbitsAvailable(eof['id'])
 
@@ -81,6 +92,6 @@ def test():
     orb = fetch(acq)
     expected = 'S1A_OPER_AUX_POEORB_OPOD_20200921T121449_V20200831T225942'
     expected += '_20200902T005942-v1.1'
-    if orb['id'] == expected: print ('preorb check passed')
-    else: print ('preorb check FAILED')
+    if orb['id'] == expected: print ('-> preorb check passed')
+    else: print ('-> preorb check FAILED')
     return

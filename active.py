@@ -33,8 +33,8 @@ def enough_coverage (aoi, acqs, eofs, version_mismatch=0):
 
     if result:
         result = footprint.coverage (aoi, acqs, eofs) >= aoi[EP][CT]
-        if not result: print ('    not enough coverage')
-    else: print ('    too many disparte versions')
+        if not result: print ('->     not enough coverage')
+    else: print ('->     too many disparte versions')
     return result
 
 def fill (aoi):
@@ -44,7 +44,7 @@ def fill (aoi):
     repeat = datetime.timedelta(days=7)
     step = datetime.timedelta(days=5)
     while aoi[EP]['pre']['count'] < aoi[EP]['pre']['length']:
-        print('  filling',aoi[EP]['pre']['count'],'of',aoi[EP]['pre']['length'])
+        print('->   filling',aoi[EP]['pre']['count'],'of',aoi[EP]['pre']['length'])
         acqs = intersection (begin=begin, end=begin+repeat,
                              location=aoi['location'])
         eofs = [orbit.fetch (acq) for acq in acqs]
@@ -88,7 +88,7 @@ def process (aoi):
     repeat = datetime.timedelta(days=7)
     step = datetime.timedelta(days=5)
     while begin < now and aoi[EP]['post']['count'] < aoi[EP]['post']['length']:
-        print ('  posting', aoi[EP]['post']['count'], 'of',
+        print ('->   posting', aoi[EP]['post']['count'], 'of',
                aoi[EP]['post']['length'])
         end = begin + repeat
         if now < end: end = now
@@ -161,15 +161,15 @@ def test_intersection():
                                  [-118.4703826904297,34.163522648722825],
                                  [-118.60359191894533,34.163522648722825]]]}
     acqs = intersection (begin, end, location)
-    if len(acqs) == 7: print ('intersection test passed')
-    else: print ('intersection test FAILED')
+    if len(acqs) == 7: print ('-> intersection test passed')
+    else: print ('-> intersection test FAILED')
 
     starts = [datetime.datetime.fromisoformat (acq['starttime'][:-1]) < end
               for acq in acqs]
     ends = [begin < datetime.datetime.fromisoformat (acq['endtime'][:-1])
             for acq in acqs]
-    if sum(starts) == len (starts): print ('intersection time passed')
-    else: print ('intersection time FAILED')
-    if sum(ends) == len (ends): print ('intersection time passed')
-    else: print ('intersection time FAILED')
+    if sum(starts) == len (starts): print ('-> intersection time passed')
+    else: print ('-> intersection time FAILED')
+    if sum(ends) == len (ends): print ('-> intersection time passed')
+    else: print ('-> intersection time FAILED')
     return

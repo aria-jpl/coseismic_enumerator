@@ -6,6 +6,8 @@ import json
 import numpy
 import orbit
 import osgeo.ogr
+import traceback
+import xml.etree.ElementTree
 
 from isceobj.Sensor.TOPS.BurstSLC import BurstSLC
 from isceobj.Util.Poly2D import Poly2D
@@ -14,8 +16,7 @@ from mpl_toolkits.basemap import Basemap
 def convert (acq, eof=None):
     '''convert an object with ['location'] to a shapely polygon'''
     if eof:
-        location = {'shape':{'ccordinates':track (acq, eof),
-                             'type':'Polygon'}}
+        location = {'coordinates':[track (acq, eof)], 'type':'Polygon'}
         poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(location))
     else: poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(acq['location']))
     return poly
@@ -28,19 +29,36 @@ def coverage (aoi, acqs, eofs):
 
     The result is the area(intersection)/area(aoi['location'])*100
     '''
-    fps = [convert (acq, eof) for acq,eof in zip(acqs,eofs)]
-    whole_fp = union (fps)
-    aoi_ = convert (aoi)
-    intersection = aoi_.Intersection (whole_fp)
-    percent = intersection.Area() / aoi_.Area() * 100.
-    print ('    coverage:',percent)
+    try:
+        fps = unionize ([convert (acq, eof) for acq,eof in zip(acqs,eofs)])
+        aoi_ = convert (aoi)
+        area = [intersection_area (aoi_, fp) for fp in fps]
+        percent = sum(area) / aoi_.Area() * 100.
+    except xml.etree.ElementTree.ParseError:
+        traceback.print_exc()
+        percent = 0
+        pass
+    print ('->     coverage:',percent)
     return percent
+
+def intersection_area (aoi, fpt):
+    '''compute the area of intersection between aoi and fp'''
+    intersection = aoi.Intersection (fpt)
+    return intersection.Area() if intersection else 0
 
 def project (latlon, to_map='cyl'):
     '''cylindrial projection of lat/lon data'''
     mmap = Basemap(projection=to_map)
     lat,lon = mmap(latlon[:,1], latlon[:,0])
-    return zip(lat,lon)
+    # Because the projection is serialized by json.dumps() it must be a list
+    # and not a zip object. Also, osgeo wants the polygon to be closed meaning
+    # the first and last elements of the list need to be the same. For both of
+    # these reasons the comprehension is useful despite pylints message.
+    # pylint: disable=unnecessary-comprehension
+    projection = [ll for ll in zip(lat,lon)] + [(lat[0],lon[0])]
+    # pylint: enable=unnecessary-comprehension
+    projection.append (projection[0])
+    return projection
 
 def track (acq:{}, eof:{})->[()]:
     '''compute the footprint within an acquisition
@@ -59,7 +77,7 @@ def track (acq:{}, eof:{})->[()]:
     # sampling the ground swath (near and far range) in 10 samples
     cur = datetime.datetime.fromisoformat (acq['starttime'][:-1])
     end = datetime.datetime.fromisoformat (acq['endtime'][:-1])
-    coord = numpy.empty ((int((end-cur).total_seconds())*2+2, 2),
+    coord = numpy.empty ((int((end-cur).total_seconds())*2+2, 3),
                          dtype=numpy.double)
     for i in range(coord.shape[0]//2):
         coord[i][:] = topo (burst, cur, near_range, doppler, wvl)
@@ -80,8 +98,20 @@ def topo (burst:BurstSLC, time, span, doppler=0, wvl=0.056):
     latlon = burst.orbit.rdr2geo (time, span, doppler=doppler, wvl=wvl)
     return latlon
 
-def union (polys):
+def unionize (polys):
     '''Create the union of a list of shapely polygons'''
-    result = polys[0]
-    for poly in polys[1:]: result = result.Union (poly)
-    return result
+    independent = [True for poly in polys]
+    unions = []
+    for i,poly in enumerate(polys):
+        for j,union in enumerate(unions):
+            active_union = union.Union (poly)
+
+            if active_union:
+                independent[i] = False
+                unions[j] = active_union
+                break
+        else: unions.append (poly)  # for/else construct
+        pass
+
+    if not all(independent): unions = unionize (unions)
+    return unions
