@@ -1,6 +1,6 @@
-# Co-Event Enumerator Submitter
+# Coseismic Enumerator
 
-Iterates through orbit an determining the relevant co-event AOIs overlaps, then submits enumeration jobs for the matching tracks and AOI.
+Iterates through active aoitrack-earthquake datasets and generates acquisition lists formed by SLCs covering the aoitrack-earthquake both prior and post the earthquake event.
 
 ## Outline of what it does
 

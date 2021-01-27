@@ -23,6 +23,9 @@ export PYTHONPATH
 
 # do the actual PGE work
 /home/ops/verdi/ops/coseismic_enumerator/iterate.py
+ec=$?
+echo "iterate exit code: $ec"
 
 # the sleep is to keep the container around for debugging purposes
 #sleep 600
+exit $ec

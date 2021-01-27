@@ -5,9 +5,10 @@
     "/home/ops/.aws": "/home/ops/.aws"
   },
   "disk_usage":"2GB",
-  "recommended-queues": ["s1gunw_coseismic-enumerator-submitter"],
-  "soft_time_limit": 1000,
-  "time_limit": 1200,
+  "recommended-queues": ["factotum-job_worker-coseismic-enumerator",
+                         "s1gunw_coseismic-enumerator-submitter"],
+  "soft_time_limit": 7200,
+  "time_limit": 12000,
   "params" : [
   {
     "name": "coverage_threshold_percent",

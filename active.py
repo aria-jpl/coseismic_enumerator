@@ -100,7 +100,7 @@ def process (aoi):
 
         if acqs and enough_coverage (aoi, acqs, eofs):
             aoi[EP]['post']['count'] += 1
-            slc.load (acqs, aoi[EP]['pre']['acqs'], aoi[EP]['post']['count'])
+            slc.load (aoi,acqs,aoi[EP]['pre']['acqs'],aoi[EP]['post']['count'])
             aoi[EP]['post']['acqs'].extend ([{'id':a['id'],
                                               'endtime':a['endtime'],
                                               'location':a['location'],
