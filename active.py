@@ -135,7 +135,6 @@ def update (aoi):
     '''
     # FIXME: need to update AOI in ES not create a zesty-test-data
     label = 'zesty-test-data-' + aoi['id']
-    es.purge (label, aoi['version'])
 
     if not os.path.exists (label): os.makedirs (label, 0o755)
 

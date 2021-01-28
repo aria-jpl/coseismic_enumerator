@@ -21,31 +21,6 @@ class ElasticSearchError(Exception):
     '''Used to signal that the request to ES failed in some way'''
     pass
 
-def purge (identity:str, version:str):
-    '''purge a record from S3 so that it can be overwritten'''
-    # pylint: disable=import-outside-toplevel
-    import es.request  # avoid a load time circular import problem
-
-    print ('->    unpublish:', identity)
-    item = query (es.request.find_id (identity, version))
-
-    if len (item) > 1:
-        raise ElasticSearchError('The ID '+identity+' is not unique within ES')
-
-    print ('->      len:', len(item))
-    if len (item) == 1:
-        item = item[0]['_source']
-        print ('->      urls:', item['urls'])
-
-        if 's3:/' in [s[:4] for s in item['urls']]:
-            print ('->      request unpublish')
-            url = item['urls'][[s[:4] for s in item['urls']].index ('s3:/')]
-            params = hysds.utils.get_download_params (url)
-            hysds.dataset_ingest.unpublish_dataset (url, params)
-            pass
-        pass
-    return
-
 # pylint: disable=dangerous-default-value,too-many-arguments
 def query (request:{}, index:str='',
            es_from:int=0, size:int=1000, sort:[]=[], aggs:{}={})->[{}]:

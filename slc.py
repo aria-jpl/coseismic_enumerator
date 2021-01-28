@@ -1,13 +1,14 @@
 '''encapsulate all that it takes to get an SLC localized'''
 
 import datetime
-import es
 import footprint
 import json
 import orbit
 import os
 
 VERSION = 'v0.0'
+
+def _to_scene_id (acq_id:str)->str: return acq_id.split('-')[1]
 
 def load (aoi:{}, primaries:[], secondaries:[], iteration:int):
     '''load SLC from DAACs if it is not already here
@@ -25,10 +26,13 @@ def load (aoi:{}, primaries:[], secondaries:[], iteration:int):
                       'dem_type': '',  # do not know
                       'direction':aoi['metadata']['context']['orbit_direction'],
                       'endtime': '',
-                      'job_priority':'',  # do not know
+                      'job_priority':3,  # given to me as sufficient
+                      'identifier':'',  # do not know
                       'master_acquisitions':[pacq['id']],
+                      'master_scenes':[],  # do not know
                       'platform':'',  # do not know
                       'slave_acquisitions':[],
+                      'slave_scenes':[],  # do not know
                       'starttime': '',
                       'tags':['s1-coseismic-gunw'],
                       'track_number':aoi['metadata']['context']['track_number'],
@@ -42,15 +46,14 @@ def load (aoi:{}, primaries:[], secondaries:[], iteration:int):
                 md_acqlist['slave_acquisitions'].append (sacq['id'])
                 pass
             pass
+        md_acqlist['master_scenes'] = [_to_scene_id (aid) for aid in
+                                       md_acqlist['master_acquisitions']]
+        md_acqlist['slave_scenes'] = [_to_scene_id (aid) for aid in
+                                      md_acqlist['slave_acquisitions']]
         md_acqlist['endtime'] = sorted (ends)[-1]
         md_acqlist['starttime'] = sorted (starts)[0]
         label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_' + str(iteration)
         label += '-' + pacq['id']
-        # Calling es.purge is really only necessary during testing. Once in
-        # operations each label should be unique for every run of the enumerator
-        # making the call nearly a no-op. Still, it is probably better to leave
-        # it in unless one is willing to continuously increase the version.
-        es.purge (label, VERSION)
 
         if not os.path.exists (label): os.makedirs (label, 0o755)
 
