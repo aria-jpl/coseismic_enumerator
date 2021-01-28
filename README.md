@@ -66,9 +66,7 @@ pylint -d C0321,C0326,C0411,W0107,R1711 active.py context.py footprint.py iterat
 
 ### Latest Result
 ```
-************* Module active
-active.py:135:2: W0511: FIXME: need to update AOI in ES not create a zesty-test-data (fixme)
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 
-------------------------------------------------------------------
-Your code has been rated at 9.97/10 (previous run: 9.97/10, +0.00)
 ```
