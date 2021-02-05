@@ -41,14 +41,16 @@ def fill (aoi):
     '''find all of the past acquisitions'''
     begin = datetime.datetime.fromisoformat (aoi['metadata']['eventtime'][:-1])
     begin = begin - datetime.timedelta (seconds=aoi[EP]['pre'][TBIS])
-    repeat = datetime.timedelta(days=7)
-    step = datetime.timedelta(days=5)
+    repeat = datetime.timedelta(days=5)
+    step = datetime.timedelta(days=3)
     while aoi[EP]['pre']['count'] < aoi[EP]['pre']['length']:
         print('->   filling',aoi[EP]['pre']['count'],'of',aoi[EP]['pre']['length'])
-        acqs = intersection (begin=begin, end=begin+repeat,
+        acqs = intersection (begin=begin-repeat, end=begin,
                              location=aoi['location'])
         eofs = [orbit.fetch (acq) for acq in acqs]
         begin = begin - step
+        repeat = datetime.timedelta(days=7)
+        step = datetime.timedelta(days=5)
 
         if acqs and enough_coverage (aoi, acqs, eofs):
             aoi[EP]['pre']['acqs'].extend ([{'id':a['id'],
@@ -59,7 +61,7 @@ def fill (aoi):
             aoi[EP]['pre']['count'] += 1
             t_0 = sorted ([datetime.datetime.fromisoformat(a['starttime'][:-1])
                            for a in acqs])[0]
-            begin = t_0 - datetime.timedelta(days=8)
+            begin = t_0 - datetime.timedelta(seconds=10)
             update (aoi)
             pass
         pass
@@ -85,8 +87,8 @@ def process (aoi):
     fill(aoi)
     begin = datetime.datetime.fromisoformat (aoi[EP]['previous'][:-1])
     now = datetime.datetime.utcnow()
-    repeat = datetime.timedelta(days=7)
-    step = datetime.timedelta(days=5)
+    repeat = datetime.timedelta(days=5)
+    step = datetime.timedelta(days=3)
     while begin < now and aoi[EP]['post']['count'] < aoi[EP]['post']['length']:
         print ('->   posting', aoi[EP]['post']['count'], 'of',
                aoi[EP]['post']['length'])
@@ -124,6 +126,9 @@ def process (aoi):
             update (aoi)
             begin = datetime.datetime.fromisoformat(aoi[EP]['previous'][:-1])
         else: begin += step
+
+        repeat = datetime.timedelta(days=7)
+        step = datetime.timedelta(days=5)
         pass
     return
 
