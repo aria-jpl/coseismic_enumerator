@@ -48,6 +48,9 @@ COLLATE_ACQUISITIONS = '''
             "term": { "dataset.raw": "acquisition-S1-IW_SLC" }
           },
           {
+            "term": { "metadata.track_numer": "" }
+          },
+          {
             "geo_shape": { "location": { "shape": {} } }
           },
           {
@@ -115,13 +118,14 @@ PAIR_ACQUISITION_WITH_ORBIT = '''
   }
 }'''
 
-def collate_acquisitions (begin, end, location):
+def collate_acquisitions (begin, end, location, track_number):
     '''helper function to build request'''
     if not isinstance(begin,str): begin = begin.isoformat('T','seconds')+'Z'
     if not isinstance(end,str): end = end.isoformat('T','seconds')+'Z'
 
     request = json.loads (COLLATE_ACQUISITIONS)
     must = request['filtered']['filter']['bool']['must']
+    must[-4]['term']['metadata.track_number'] = track_number
     must[-3]['geo_shape']['location']['shape'] = location
     must[-2]['range']['endtime']['gt'] = begin
     must[-1]['range']['starttime']['lt'] = end
