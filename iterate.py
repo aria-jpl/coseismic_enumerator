@@ -22,7 +22,7 @@ def initialize (aoi):
 
     Check the AOI for the state information. If it does not exist, then add it.
     '''
-    if active.EP not in aoi:
+    if active.EP not in aoi or context.reset_all():
         aoi[active.EP] = {
             active.CT:context.coverage_threshold_percent(),
             'post':{'acqs':[], 'count':0, 'index':[],

@@ -1,6 +1,7 @@
 '''transact with geo-data and satelite data'''
 
 import datetime
+import context
 import isce  # pylint: disable=unused-import
 import json
 import numpy
@@ -59,6 +60,31 @@ def project (latlon, to_map='cyl'):
     # pylint: enable=unnecessary-comprehension
     projection.append (projection[0])
     return projection
+
+def prune (aoi, acqs, eofs):
+    '''passband filter for acqs and eofs whose footprint intersects the AOI
+
+    Somewhat evily, this routine modifies acqs and eofs inline rather than
+    returning the shortened arrays. This was done just to make the code changes
+    simpler and keep them localized to a single place namely
+    active.enough_coverage().
+    '''
+    acqs_intersected = []
+    aoi_ = convert (aoi)
+    aoi_area = aoi_.Area()
+    eofs_intersected = []
+    for i,fpt in enumerate([convert (acq, eof) for acq,eof in zip(acqs,eofs)]):
+        percent = intersection_area (aoi_, fpt) / aoi_area * 100.
+        if  percent > 100 - context.coverage_threshold_percent():
+            acqs_intersected.append (acqs[i])
+            eofs_intersected.append (eofs[i])
+            pass
+        pass
+    acqs.clear()
+    acqs.extend (acqs_intersected)
+    eofs.clear()
+    eofs.extend (eofs_intersected)
+    return
 
 def track (acq:{}, eof:{})->[()]:
     '''compute the footprint within an acquisition

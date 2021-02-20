@@ -29,6 +29,10 @@
   {
     "name": "prior_buffer_in_seconds",
     "destination": "context"
-  }
+  },
+  {
+    "name": "reset_all",
+    "destination": "context"
+  }  
   ]
 }

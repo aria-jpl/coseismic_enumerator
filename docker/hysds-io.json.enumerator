@@ -8,7 +8,7 @@
       "from": "submitter",
       "type": "number",
       "lambda": "lambda i:int(i)",
-      "default": "70"
+      "default": "90"
     },
     {
       "name": "post_count",
@@ -22,7 +22,7 @@
       "from": "submitter",
       "type": "number",
       "lambda": "lambda i:int(i)",
-      "default": "86400"
+      "default": "60"
     },
     {
       "name": "prior_count",
@@ -36,7 +36,14 @@
       "from": "submitter",
       "type": "number",
       "lambda": "lambda i:int(i)",
-      "default": "86400"
+      "default": "60"
+    },
+    {
+      "name": "reset_all",
+      "from": "submitter",
+      "type": "number",
+      "lambda": "lambda i:int(i)",
+      "default": "0"
     }
   ]
 }
