@@ -60,7 +60,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[], iteration:int):
             md_acqlist['starttime'] = sorted (starts)[0]
             label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_'
             label += str(index+1) + '+' + str(iteration+1)
-            label += '-' + pacq['id']
+            label += '--' + aoi['id'] + '--' + pacq['id']
 
             if not os.path.exists (label): os.makedirs (label, 0o755)
 

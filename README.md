@@ -61,7 +61,7 @@ Python 3.8.5 (default, Jul 28 2020, 12:59:40)
 
 ### Command
 ```
-pylint -d C0321,C0326,C0411,W0107,R1711 active.py context.py footprint.py iterate.py orbit.py slc.py test.py es
+pylint -d C0321,C0326,C0411,W0107,R1711 active.py context.py footprint.py iterate.py orbit.py slc.py test.py es submit.py
 ```
 
 ### Latest Result
