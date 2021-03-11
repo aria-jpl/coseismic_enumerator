@@ -14,6 +14,7 @@ import datetime
 import es
 import es.request
 import orbit
+import sys
 import traceback
 # pylint: enable=wrong-import-position
 
@@ -51,7 +52,10 @@ def main():
         print ('-> begin:', aoi['id'])
         initialize (aoi)
         try: active.process (aoi)
-        except orbit.NoOrbitsAvailable: traceback.print_exc()
+        except orbit.NoOrbitsAvailable:
+            print ('No orbit file AOI:', aoi['id'], file=sys.stderr)
+            traceback.print_exc()
+            pass
         orbit.cleanup()
         print ('-> done:', aoi['id'])
         pass
