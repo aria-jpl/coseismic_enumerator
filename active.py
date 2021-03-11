@@ -28,14 +28,18 @@ def enough_coverage (aoi, acqs, eofs, version_mismatch=0):
     - If all the acquisitions are processed with same version
     '''
     footprint.prune (aoi,acqs,eofs)
+    result = False
     versions = collections.Counter([a['metadata']['processing_version']
                                     for a in acqs])
-    result = (len(acqs) - versions.most_common()[0][1]) <= version_mismatch
 
-    if result:
-        result = footprint.coverage (aoi, acqs, eofs) >= aoi[EP][CT]
-        if not result: print ('->     not enough coverage')
-    else: print ('->     too many disparte versions')
+    if acqs:
+        result = (len(acqs) - versions.most_common()[0][1]) <= version_mismatch
+
+        if result:
+            result = footprint.coverage (aoi, acqs, eofs) >= aoi[EP][CT]
+            if not result: print ('->     not enough coverage')
+        else: print ('->     too many disparte versions')
+    else: print ('->     pruning removed all acquisitions')
     return result
 
 def fill (aoi):
