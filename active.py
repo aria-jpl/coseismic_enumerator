@@ -16,7 +16,9 @@ import slc
 
 from constants import CT
 from constants import EP
+from constants import SENTINEL_LAUNCH
 from constants import TBIS
+from constants import NotEnoughHistoricalData
 
 def enough_coverage (aoi, acqs, eofs, version_mismatch=0):
     '''determine if these acquisitions (acqs) are good enough
@@ -49,6 +51,8 @@ def fill (aoi):
     repeat = datetime.timedelta(days=5)
     step = datetime.timedelta(days=3)
     while aoi[EP]['pre']['count'] < aoi[EP]['pre']['length']:
+        if begin < SENTINEL_LAUNCH: raise NotEnoughHistoricalData()
+
         print('->   filling',aoi[EP]['pre']['count'],'of',aoi[EP]['pre']['length'])
         acqs = intersection (begin=begin-repeat, end=begin,
                              location=aoi['location'],

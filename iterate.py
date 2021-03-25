@@ -16,6 +16,9 @@ import es.request
 import orbit
 import sys
 import traceback
+
+from constants import NoOrbitsAvailable
+from constants import NotEnoughHistoricalData
 # pylint: enable=wrong-import-position
 
 def initialize (aoi):
@@ -52,9 +55,22 @@ def main():
         print ('-> begin:', aoi['id'])
         initialize (aoi)
         try: active.process (aoi)
-        except orbit.NoOrbitsAvailable:
+        except NoOrbitsAvailable:
             print ('No orbit file AOI:', aoi['id'], file=sys.stderr)
             traceback.print_exc()
+        except NotEnoughHistoricalData:
+            print ('Not enough historical data for AOI:', aoi['id'],
+                   file=sys.stderr)
+            traceback.print_exc()
+
+            if 'tags' in aoi['metadata']:
+                aoi['metadata']['tags'].append ('not-enough-history')
+            else: aoi['metadata']['tags'] = ['not-enough-history']
+
+            now = datetime.datetime.utcnow().isoformat('T','seconds')+'Z'
+            aoi['endtime'] = now
+            aoi['starttime'] = now
+            active.update (aoi)
             pass
         orbit.cleanup()
         print ('-> done:', aoi['id'])

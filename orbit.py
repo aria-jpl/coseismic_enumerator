@@ -6,12 +6,9 @@ import hysds.utils
 import isce  # pylint: disable=unused-import
 import os
 
+from constants import NoOrbitsAvailable
 from isceobj.Sensor.TOPS.BurstSLC import BurstSLC
 from isceobj.Sensor.TOPS.Sentinel1 import Sentinel1 as Sentinel
-
-class NoOrbitsAvailable(Exception):
-    '''Isolate an exception for when acquisitions arrive prior to orbits'''
-    pass
 
 def cleanup():
     '''Remove downloaded orbit files so HYSDS does not try to upload them'''
