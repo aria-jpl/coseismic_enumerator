@@ -124,8 +124,8 @@ def _significantly_intersected (aoi:{},
                                           md_acqlist['slave_acquisitions']]
             md_acqlist['endtime'] = sorted (ends)[-1]
             md_acqlist['starttime'] = sorted (starts)[0]
-            label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_'
-            label += str(index+1) + '+' + str(iteration+1)
+            label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_b'
+            label += str(index+1) + 'a' + str(iteration+1)
             label += '-' + pacq['id']
 
             if not os.path.exists (label): os.makedirs (label, 0o755)
