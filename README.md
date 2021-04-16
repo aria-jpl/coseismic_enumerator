@@ -97,10 +97,10 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
     2. Add a cron item like this one which runs every 4 hours  
         `0 */4 * * * $HOME/verdi/bin/python /export/home/hysdsops/verdi/ops/coseismic_enumerator/submit.py main https://100.67.33.56/mozart/api/v0.1/job/submit`
 1. What are common expected errors that will cause the enumerator to stop?  
-    There are no errors that should cause the enumerator to stop. There are two errors that are handled by the enumerator but do not prevent it from processing all other AOIs.
+    - There are no errors that should cause the enumerator to stop. There are two errors that are handled by the enumerator but do not prevent it from processing all other AOIs.
 1. What is the expected disk usage for this PGE?  
-    Less than 100 MBytes
+    - Less than 100 MBytes
 1. What happens if orbit files are unavailable for AOITracks that the Enumerator is asked to processes?  
-    While it may be rare, it can happen when an acquistion arrives before an orbit file. When no orbit is found that covers an acquistion, an error is raised, caught, and logged. The enumerator then moves on to the next AOI to be processed.
+    - While it may be rare, it can happen when an acquistion arrives before an orbit file. When no orbit is found that covers an acquistion, an error is raised, caught, and logged. The enumerator then moves on to the next AOI to be processed.
 1. How should I manually run the Enumerator for failed AOITracks?  
-    There is no manual or HySDS method for retrying the enumerator if and when it fails. The nature of cron is that it runs periodically. Hence, if a run of the enumerator fails due to a missing orbit, then it will try again on the next period until it the orbit file arrives.
+    - There is no manual or HySDS method for retrying the enumerator if and when it fails. The nature of cron is that it runs periodically. Hence, if a run of the enumerator fails due to a missing orbit, then it will try again on the next period until it the orbit file arrives.
