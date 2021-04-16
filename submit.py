@@ -19,6 +19,7 @@ tag_name = ['coseismic-enumerator-cron']
 params = {
     'queue': queue,
     'priority': 6,
+    'retries': 0,
     'job_name': job_type,
     'tags': json.dumps(tag_name),
     'type': "{}:{}".format(job_type, job_release),
