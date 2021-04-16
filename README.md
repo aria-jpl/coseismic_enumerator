@@ -101,6 +101,6 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 1. What is the expected disk usage for this PGE?  
     - Less than 100 MBytes
 1. What happens if orbit files are unavailable for AOITracks that the Enumerator is asked to processes?  
-    - While it may be rare, it can happen when an acquistion arrives before an orbit file. When no orbit is found that covers an acquistion, an error is raised, caught, and logged. The enumerator then moves on to the next AOI to be processed.
+    - While it may be rare, it can happen that an acquistion arrives before an orbit file. When no orbit is found that covers an acquistion, an error is raised, caught, and logged. The enumerator then moves on to the next AOI to be processed.
 1. How should I manually run the Enumerator for failed AOITracks?  
     - There is no manual or HySDS method for retrying the enumerator if and when it fails. The nature of cron is that it runs periodically. Hence, if a run of the enumerator fails due to a missing orbit, then it will try again on the next period until it the orbit file arrives.
