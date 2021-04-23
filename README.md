@@ -106,3 +106,7 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
     - There is no manual or HySDS method for retrying the enumerator if and when it fails. The nature of cron is that it runs periodically. Hence, if a run of the enumerator fails due to a missing orbit, then it will try again on the next period until it the orbit file arrives.
 6. How do I find the AOITrack ID associated with a failed Enumerator job?
     - Open up the Enumerator's associated HySDS job `_stdout.txt` file and look for the last AOITrack referenced in that file
+1. If the enumerator fails on a particular aoitrack-earthquake, is any data persisted to ES as a results (and would that impact the next iteration / processing job)?  
+    - No: HySDS does not ingest any data if detects an error.
+1. Does the enumerator process aoitrack-earthquakes via a “round-robin” model - in that it will process the “next” aoitrack-earthquake dataset by by starting date, or by some other heuristic?  
+    - It processes them in the order returned from ES. No special sorts or other ordering requests are made to ES when requesting the AOI tracks. There is no reason to sort since HySDS sees it as a bulk operation.
