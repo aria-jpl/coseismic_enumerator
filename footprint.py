@@ -73,12 +73,16 @@ def prune (aoi, acqs, eofs):
     aoi_ = convert (aoi)
     aoi_area = aoi_.Area()
     eofs_intersected = []
-    for i,fpt in enumerate([convert (acq, eof) for acq,eof in zip(acqs,eofs)]):
-        percent = intersection_area (aoi_, fpt) / aoi_area * 100.
-        if  percent > 100 - context.coverage_threshold_percent():
-            acqs_intersected.append (acqs[i])
-            eofs_intersected.append (eofs[i])
-            pass
+    for i,(acq,eof) in enumerate(zip(acqs,eofs)):
+        try:
+            fpt = convert (acq, eof)
+            percent = intersection_area (aoi_, fpt) / aoi_area * 100.
+
+            if  percent > 100 - context.coverage_threshold_percent():
+                acqs_intersected.append (acqs[i])
+                eofs_intersected.append (eofs[i])
+                pass
+        except xml.etree.ElementTree.ParseError: pass  # prune it
         pass
     acqs.clear()
     acqs.extend (acqs_intersected)
