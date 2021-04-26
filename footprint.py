@@ -10,6 +10,7 @@ import osgeo.ogr
 import traceback
 import xml.etree.ElementTree
 
+from constants import get_location
 from isceobj.Sensor.TOPS.BurstSLC import BurstSLC
 from isceobj.Util.Poly2D import Poly2D
 from mpl_toolkits.basemap import Basemap
@@ -19,7 +20,7 @@ def convert (acq, eof=None):
     if eof:
         location = {'coordinates':[track (acq, eof)], 'type':'Polygon'}
         poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(location))
-    else: poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(acq['location']))
+    else: poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(get_location(acq)))
     return poly
 
 def coverage (aoi, acqs, eofs):

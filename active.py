@@ -19,6 +19,7 @@ from constants import EP
 from constants import SENTINEL_LAUNCH
 from constants import TBIS
 from constants import NotEnoughHistoricalData
+from constants import get_location
 
 def enough_coverage (aoi, acqs, eofs, version_mismatch=0):
     '''determine if these acquisitions (acqs) are good enough
@@ -55,7 +56,7 @@ def fill (aoi):
 
         print('->   filling',aoi[EP]['pre']['count'],'of',aoi[EP]['pre']['length'])
         acqs = intersection (begin=begin-repeat, end=begin,
-                             location=aoi['location'],
+                             location=get_location (aoi),
                              track_number=aoi['metadata']['context']['track_number'])
 
         eofs = [orbit.fetch (acq) for acq in acqs]
@@ -66,7 +67,7 @@ def fill (aoi):
         if acqs and enough_coverage (aoi, acqs, eofs):
             aoi[EP]['pre']['acqs'].extend ([{'id':a['id'],
                                              'endtime':a['endtime'],
-                                             'location':a['location'],
+                                             'location':get_location (a),
                                              'starttime':a['starttime']}
                                             for a in acqs])
             aoi[EP]['pre']['index'].extend ([aoi[EP]['pre']['count']
@@ -112,7 +113,7 @@ def process (aoi):
 
         acqs = intersection (begin=begin,
                              end=end,
-                             location=aoi['location'],
+                             location=get_location (aoi),
                              track_number=aoi['metadata']['context']['track_number'])
         eofs = [orbit.fetch (acq) for acq in acqs]
 
@@ -120,7 +121,7 @@ def process (aoi):
             slc.load (aoi,acqs,aoi[EP]['pre']['acqs'],aoi[EP]['post']['count'])
             aoi[EP]['post']['acqs'].extend ([{'id':a['id'],
                                               'endtime':a['endtime'],
-                                              'location':a['location'],
+                                              'location':get_location (a),
                                               'starttime':a['starttime']}
                                              for a in acqs])
             aoi[EP]['post']['index'].extend ([aoi[EP]['post']['count']
