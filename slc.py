@@ -3,6 +3,7 @@
 import context
 import datetime
 import footprint
+import hashlib
 import json
 import orbit
 import os
@@ -11,9 +12,25 @@ from constants import EP
 
 VERSION = 'v0.0'
 
+def _make_label (acqlist:{})->str():
+    acqlist['full_id_hash'] = hashlib.md5(json.dumps([
+        ' '.join (sorted (acqlist['master_scenes'])),
+        ' '.join (sorted (acqlist['slave_scenes']))
+        ]).encode('utf8')).hexdigest()
+    # pylint: disable=line-too-long
+    return '-'.join (['S1-COSEISMIC-GUNW-acqlist',
+                      acqlist['direction'][:3].lower(),
+                      'R{0}S{1}'.format (len (acqlist['master_scenes']),
+                                         len (acqlist['slave_scenes'])),
+                      'TN{0:03d}'.format(int(acqlist['track_number'])),
+                      acqlist['starttime'].replace('-','').replace(':','').replace(' ','T')[:-1],
+                      acqlist['endtime'].replace('-','').replace(':','').replace(' ','T')[:-1],
+                      'poeorb',
+                      acqlist['full_id_hash'][:4]])
+
 def _to_scene_id (acq_id:str)->str: return acq_id.split('-')[1]
 
-def _intersected (aoi:{}, primaries:[], secondaries:[], iteration:int):
+def _intersected (aoi:{}, primaries:[], secondaries:[]):
     '''generateration algorithm that any amount of intersection
     '''
     # pylint: disable=too-many-locals
@@ -58,9 +75,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[], iteration:int):
                                           md_acqlist['slave_acquisitions']]
             md_acqlist['endtime'] = sorted (ends)[-1]
             md_acqlist['starttime'] = sorted (starts)[0]
-            label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_'
-            label += str(index+1) + '+' + str(iteration+1)
-            label += '--' + aoi['id'] + '--' + pacq['id']
+            label = _make_label (md_acqlist)
 
             if not os.path.exists (label): os.makedirs (label, 0o755)
 
@@ -75,10 +90,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[], iteration:int):
         pass
     return
 
-def _significantly_intersected (aoi:{},
-                                primaries:[],
-                                secondaries:[],
-                                iteration:int):
+def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
     '''generateration algorithm that requires a certain amount of intersection
     '''
     # pylint: disable=too-many-locals
@@ -124,9 +136,7 @@ def _significantly_intersected (aoi:{},
                                           md_acqlist['slave_acquisitions']]
             md_acqlist['endtime'] = sorted (ends)[-1]
             md_acqlist['starttime'] = sorted (starts)[0]
-            label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_b'
-            label += str(index+1) + 'a' + str(iteration+1)
-            label += '-' + pacq['id']
+            label = _make_label (md_acqlist)
 
             if not os.path.exists (label): os.makedirs (label, 0o755)
 
@@ -141,7 +151,7 @@ def _significantly_intersected (aoi:{},
         pass
     return
 
-def _singular (aoi:{}, primaries:[], secondaries:[], iteration:int):
+def _singular (aoi:{}, primaries:[], secondaries:[]):
     '''generateration algorithm that does not break information apart
     '''
     md_acqlist = {'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
@@ -176,9 +186,7 @@ def _singular (aoi:{}, primaries:[], secondaries:[], iteration:int):
                                       md_acqlist['slave_acquisitions']]
         md_acqlist['endtime'] = sorted (ends)[-1]
         md_acqlist['starttime'] = sorted (starts)[0]
-        label = 'S1-COSEISMIC-GUNW-acq-list-event-iter_'
-        label += str(index+1) + '+' + str(iteration+1)
-        label += '-' + primaries[0]['id']
+        label = _make_label (md_acqlist)
 
         if not os.path.exists (label): os.makedirs (label, 0o755)
 
@@ -192,15 +200,15 @@ def _singular (aoi:{}, primaries:[], secondaries:[], iteration:int):
         pass
     return
 
-def load (aoi:{}, primaries:[], secondaries:[], iteration:int):
+def load (aoi:{}, primaries:[], secondaries:[]):
     '''load SLC from DAACs if it is not already here
 
     This is going to send jobs to a Localizer queue.
     '''
     i = 1
-    if i == 1: _intersected (aoi, primaries, secondaries, iteration)
+    if i == 1: _intersected (aoi, primaries, secondaries)
     elif i == 2:
-        _significantly_intersected (aoi, primaries, secondaries, iteration)
-    elif i == 3: _singular (aoi, primaries, secondaries, iteration)
+        _significantly_intersected (aoi, primaries, secondaries)
+    elif i == 3: _singular (aoi, primaries, secondaries)
     else: raise ValueError('bad configuration')
     return

@@ -118,7 +118,7 @@ def process (aoi):
         eofs = [orbit.fetch (acq) for acq in acqs]
 
         if acqs and enough_coverage (aoi, acqs, eofs):
-            slc.load (aoi,acqs,aoi[EP]['pre']['acqs'],aoi[EP]['post']['count'])
+            slc.load (aoi, acqs, aoi[EP]['pre']['acqs'])
             aoi[EP]['post']['acqs'].extend ([{'id':a['id'],
                                               'endtime':a['endtime'],
                                               'location':get_location (a),
