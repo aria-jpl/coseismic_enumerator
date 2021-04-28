@@ -108,7 +108,7 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
     - Open up the Enumerator's associated HySDS job `_stdout.txt` file and look for the last AOITrack referenced in that file
 7. If the enumerator fails on a particular aoitrack-earthquake, is any data persisted to ES as a results (and would that impact the next iteration / processing job)?  
     - No: HySDS does not ingest any data if detects an error.
-8. Does the enumerator process aoitrack-earthquakes via a “round-robin” model - in that it will process the “next” aoitrack-earthquake dataset by by starting date, or by some other heuristic?  
+8. Does the enumerator process aoitrack-earthquakes via a “round-robin” model - in that it will process the “next” aoitrack-earthquake dataset by starting date, or by some other heuristic?  
     - It processes them in the order returned from ES. No special sorts or other ordering requests are made to ES when requesting the AOI tracks. There is no reason to sort since HySDS sees it as a bulk operation.
 9. What are the input datasets of the enumerator?
     - An *AOITrack* Dataset, which is a partition of the original Earthquake polygon into Sentinel-1 tracks. Each of these datasets has further water masked land.
