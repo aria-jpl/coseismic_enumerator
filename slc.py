@@ -40,7 +40,8 @@ def _intersected (aoi:{}, primaries:[], secondaries:[]):
            'second':[footprint.convert (acq, orbit.fetch (acq))
                      for acq in secondaries]}
     for pfp,pacq in zip(fps['prime'],primaries):
-        md_acqlist = {'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
+        md_acqlist = {'aoi_track_id':aoi['id'],
+                      'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
                       'dem_type': '',  # do not know
                       'direction':aoi['metadata']['context']['orbit_direction'],
                       'endtime': '',
@@ -49,6 +50,8 @@ def _intersected (aoi:{}, primaries:[], secondaries:[]):
                       'master_acquisitions':[pacq['id']],
                       'master_scenes':[],
                       'platform':'',  # do not know
+                      'post_index':aoi[ EP]['post']['count'] + 1,
+                      'pre_index':0,
                       'slave_acquisitions':[],
                       'slave_scenes':[],
                       'starttime': '',
@@ -58,6 +61,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[]):
         for index in set(aoi[ EP]['pre']['index']):
             ends = [pacq['endtime']]
             starts = [pacq['starttime']]
+            md_acqlist['pre-index'] = -(index+1)
             md_acqlist['slave_acquisitions'] = []
             for _ignore,sfp,sacq in filter (lambda t,i=index:t[0] == i,
                                             zip(aoi[EP]['pre']['index'],
@@ -100,7 +104,8 @@ def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
            'second':[footprint.convert (acq, orbit.fetch (acq))
                      for acq in secondaries]}
     for pfp,pacq in zip(fps['prime'],primaries):
-        md_acqlist = {'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
+        md_acqlist = {'aoi_track_id':aoi['id'],
+                      'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
                       'dem_type': '',  # do not know
                       'direction':aoi['metadata']['context']['orbit_direction'],
                       'endtime': '',
@@ -109,6 +114,8 @@ def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
                       'master_acquisitions':[pacq['id']],
                       'master_scenes':[],
                       'platform':'',  # do not know
+                      'post_index':aoi[ EP]['post']['count'] + 1,
+                      'pre_index':0,
                       'slave_acquisitions':[],
                       'slave_scenes':[],
                       'starttime': '',
@@ -118,6 +125,7 @@ def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
         for index in set(aoi[ EP]['pre']['index']):
             ends = [pacq['endtime']]
             starts = [pacq['starttime']]
+            md_acqlist['pre_index'] = -(index+1)
             md_acqlist['slave_acquisitions'] = []
             for _ignore,sfp,sacq in filter (lambda t,i=index:t[0] == i,
                                             zip(aoi[EP]['pre']['index'],
@@ -154,7 +162,8 @@ def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
 def _singular (aoi:{}, primaries:[], secondaries:[]):
     '''generateration algorithm that does not break information apart
     '''
-    md_acqlist = {'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
+    md_acqlist = {'aoi_track_id':aoi['id'],
+                  'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
                   'dem_type': '',  # do not know
                   'direction':aoi['metadata']['context']['orbit_direction'],
                   'endtime': '',
@@ -163,6 +172,8 @@ def _singular (aoi:{}, primaries:[], secondaries:[]):
                   'master_acquisitions':[pacq['id'] for pacq in primaries],
                   'master_scenes':[],
                   'platform':'',  # do not know
+                  'post_index':aoi[ EP]['post']['count'] + 1,
+                  'pre_index':0,
                   'slave_acquisitions':[],
                   'slave_scenes':[],
                   'starttime': '',
@@ -172,6 +183,7 @@ def _singular (aoi:{}, primaries:[], secondaries:[]):
     for index in set(aoi[ EP]['pre']['index']):
         ends = [pacq['endtime'] for pacq in primaries]
         starts = [pacq['starttime'] for pacq in primaries]
+        md_acqlist['pre_index'] = -(index+1)
         md_acqlist['slave_acquisitions'] = []
         for _ignore,sacq in filter (lambda t,i=index:t[0] == i,
                                     zip(aoi[EP]['pre']['index'],
