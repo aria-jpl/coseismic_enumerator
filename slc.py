@@ -61,7 +61,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[]):
         for index in set(aoi[ EP]['pre']['index']):
             ends = [pacq['endtime']]
             starts = [pacq['starttime']]
-            md_acqlist['pre-index'] = -(index+1)
+            md_acqlist['pre_index'] = -(index+1)
             md_acqlist['slave_acquisitions'] = []
             for _ignore,sfp,sacq in filter (lambda t,i=index:t[0] == i,
                                             zip(aoi[EP]['pre']['index'],
