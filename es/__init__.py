@@ -61,7 +61,7 @@ def query (request:{}, index:str='',
     total = None
     while total is None or len(result) < total:
         content['from'] = len(result) + es_from
-        response = requests.post (grq_url, data=json.dumps(content))
+        response = requests.get (grq_url, data=json.dumps(content))
         response.raise_for_status()
         data = json.loads (response.text, encoding='ascii')
         result.extend (data.get('hits', {}).get('hits', []))
