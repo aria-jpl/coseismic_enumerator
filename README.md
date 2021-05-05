@@ -118,6 +118,12 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
     - The event is considered index 0. The pre-index is then the crossing of the AOI with the track number defined in the AOI prior (pre) to the event. The post-index is similar but after the event. In both cases, the value of 1 is closest to the event with larger numbers moving further away in their respective directions. How many previous and post event crossings there are is configurable, `prior_count` and `post_count`, at run time with the default being 3 and 3.
 14. For each AOITrack, how many acquisition lists can we expect?  
     - There is no fixed expectation. It is a function of the AOI size, which Sentinel (A or B) cross the AOI, which [acquisition list algorithm](https://github.com/aria-jpl/coseismic_enumerator/blob/0874f97c465399ec781b72227ddf7ed46315e93f/slc.py#L201-L205) is being used, and configuration like `prior_count` and `post_count` that determine how many acquisition lists will be generated for an AOI over all time. Given the default configuration including `_intersected()` and that most AOIs should be smaller than an acquisition footprint, one would expect 21 to 24 acquisition lists for all 9 pre/post pairs. However it could be as small as 18 and as large as 27 if only Sentinel A or B crossings are found.
-15. How do we change the minimum coverage requirement over an AOITrack for the generation? What is the default value?
+15. How do we change the minimum coverage requirement over an AOITrack for the generation? What is the default value?  
+     - Cannot change it for any individual AOI track. It is a global threshold for all AOI tracks. In theory, if there are no active AOI tracks, then:  
+         1. pause the cron job
+         2. mark the AOI track that should be done with a different coverage threshold as actyive (adjuct endtime)
+         3. run on-demad with desired coverage threshold (it is a parameter on the on-demand form)
+         4. when job is complete, turn cron back on
+     - Set the 'coverage_threshold_percent' as defined in [docker/hysds-io.json.enumerator](https://github.com/aria-jpl/coseismic_enumerator/blob/1a6cd0616505b69d3e5eff935bd89acd233bb434/docker/hysds-io.json.enumerator#L7-L11) whose default value is 90% coverage.
 16. How do we know if there is an AOITrack without enough coverage?
     - Check the `_stdout.txt` for a job and search for the `AOITrack`. Check out [this issue](https://github.com/aria-jpl/coseismic_enumerator/issues/21#issue-874874472).
