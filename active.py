@@ -57,7 +57,7 @@ def fill (aoi):
         print('->   filling',aoi[EP]['pre']['count'],'of',aoi[EP]['pre']['length'])
         acqs = intersection (begin=begin-repeat, end=begin,
                              location=get_location (aoi),
-                             track_number=aoi['metadata']['context']['track_number'])
+                             track_number=aoi['metadata']['event_metadata']['track_number'])
 
         eofs = [orbit.fetch (acq) for acq in acqs]
         begin = begin - step
@@ -114,7 +114,7 @@ def process (aoi):
         acqs = intersection (begin=begin,
                              end=end,
                              location=get_location (aoi),
-                             track_number=aoi['metadata']['context']['track_number'])
+                             track_number=aoi['metadata']['event_metadata']['track_number'])
         eofs = [orbit.fetch (acq) for acq in acqs]
 
         if acqs and enough_coverage (aoi, acqs, eofs):
