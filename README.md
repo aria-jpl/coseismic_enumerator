@@ -127,3 +127,8 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
      - Set the 'coverage_threshold_percent' as defined in [docker/hysds-io.json.enumerator](https://github.com/aria-jpl/coseismic_enumerator/blob/1a6cd0616505b69d3e5eff935bd89acd233bb434/docker/hysds-io.json.enumerator#L7-L11) whose default value is 90% coverage.
 16. How do we know if there is an AOITrack without enough coverage?
     - Check the `_stdout.txt` for a job and search for the `AOITrack`. Check out [this issue](https://github.com/aria-jpl/coseismic_enumerator/issues/21#issue-874874472).
+17. How do I ensure the Enumerator reprocesses a given AOITrack?  
+    1. Change the enddate to the future.
+    2. If `processing_event` exists in the AOI also need to do one of these two items.  
+        1. Run the enumerator On-Demand with `reset_all` set to non-zero
+        2. While setting the enddate to the future, delete `event_processing` from the AOI
