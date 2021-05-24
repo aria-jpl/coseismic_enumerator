@@ -130,5 +130,5 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 17. How do I ensure the Enumerator reprocesses a given AOITrack?  
     1. Change the enddate to the future.
     2. If `processing_event` exists in the AOI also need to do one of these two items.  
-        1. Run the enumerator On-Demand with `reset_all` set to non-zero
+        1. Run the enumerator On-Demand with `reset_all` set to non-zero (this will only change active AOIs - not all AOIs)
         2. While setting the enddate to the future, delete `event_processing` from the AOI
