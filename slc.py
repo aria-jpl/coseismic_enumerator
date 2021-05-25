@@ -217,7 +217,7 @@ def load (aoi:{}, primaries:[], secondaries:[]):
 
     This is going to send jobs to a Localizer queue.
     '''
-    i = 1
+    i = 3
     if i == 1: _intersected (aoi, primaries, secondaries)
     elif i == 2:
         _significantly_intersected (aoi, primaries, secondaries)
