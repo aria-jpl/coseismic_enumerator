@@ -48,7 +48,7 @@ COLLATE_ACQUISITIONS = '''
             "term": { "dataset.raw": "acquisition-S1-IW_SLC" }
           },
           {
-            "term": { "metadata.track_numer": "" }
+            "term": { "metadata.track_number": "" }
           },
           {
             "geo_shape": { "location": { "shape": {} } }
