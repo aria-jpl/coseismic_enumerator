@@ -2,6 +2,7 @@
 
 import datetime
 import context
+import hashlib
 import isce  # pylint: disable=unused-import
 import json
 import numpy
@@ -15,10 +16,15 @@ from isceobj.Sensor.TOPS.BurstSLC import BurstSLC
 from isceobj.Util.Poly2D import Poly2D
 from mpl_toolkits.basemap import Basemap
 
+DC = {}
+
 def convert (acq, eof=None):
     '''convert an object with ['location'] to a shapely polygon'''
     if eof:
+        DC[acq['id']] = {}
         location = {'coordinates':[track (acq, eof)], 'type':'Polygon'}
+        DC[acq['id']]['orig'] = acq['location']
+        DC[acq['id']]['corr'] = location
         poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(location))
     else: poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(get_location(acq)))
     return poly
@@ -32,10 +38,18 @@ def coverage (aoi, acqs, eofs):
     The result is the area(intersection)/area(aoi['location'])*100
     '''
     try:
+        DC.clear()
         fps = unionize ([convert (acq, eof) for acq,eof in zip(acqs,eofs)])
+        DC['union'] = json.loads(fps.ExportToJson())
         aoi_ = convert (aoi)
         area = [intersection_area (aoi_, fp) for fp in fps]
         percent = sum(area) / aoi_.Area() * 100.
+        DC['area'] = area
+        DC['percent'] = percent
+        sdc = json.dumps (DC)
+        md5 = hashlib.md5()
+        md5.update (sdc.encode())
+        with open (md5.hexdigest() + '.dc.json', 'tw') as file: file.write(sdc)
     except xml.etree.ElementTree.ParseError:
         traceback.print_exc()
         percent = 0
@@ -115,6 +129,7 @@ def track (acq:{}, eof:{})->[()]:
         coord[coord.shape[0]-i-1][:] = topo(burst, cur, far_range, doppler, wvl)
         cur = cur + datetime.timedelta(seconds=1)
         pass
+    DC[acq['id']]['burst'] = coord
     return project (coord)
 
 def topo (burst:BurstSLC, time, span, doppler=0, wvl=0.056):

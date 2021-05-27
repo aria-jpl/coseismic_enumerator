@@ -49,8 +49,38 @@ def initialize (aoi):
     return
 
 def main():
+    '''the main processing block -- works on a single AOI for data collection'''
+    aoi_id = 'AOITRACK_eq_usgs_neic_pdl_us7000e54r_172'
+    for response in es.query (es.request.find_id (aoi_id, 'v1.0')):
+        aoi = response['_source']
+        print ('-> begin:', aoi['id'])
+        initialize (aoi)
+        try: active.process (aoi)
+        except NoOrbitsAvailable:
+            print ('No orbit file AOI:', aoi['id'], file=sys.stderr)
+            traceback.print_exc()
+        except NotEnoughHistoricalData:
+            print ('Not enough historical data for AOI:', aoi['id'],
+                   file=sys.stderr)
+            traceback.print_exc()
+
+            if 'tags' in aoi['metadata']:
+                aoi['metadata']['tags'].append ('not-enough-history')
+            else: aoi['metadata']['tags'] = ['not-enough-history']
+
+            now = datetime.datetime.utcnow().isoformat('T','seconds')+'Z'
+            aoi['endtime'] = now
+            aoi['starttime'] = now
+            active.update (aoi)
+            pass
+        orbit.cleanup()
+        print ('-> done:', aoi['id'])
+        pass
+    return
+
+def main_real():
     '''the main processing block -- find and loop over all active AOIs'''
-    for response in  es.query (es.request.ALL_ACTIVE_AOI):
+    for response in es.query (es.request.ALL_ACTIVE_AOI):
         aoi = response['_source']
         print ('-> begin:', aoi['id'])
         initialize (aoi)
