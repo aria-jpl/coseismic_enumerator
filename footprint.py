@@ -40,7 +40,7 @@ def coverage (aoi, acqs, eofs):
     try:
         DC.clear()
         fps = unionize ([convert (acq, eof) for acq,eof in zip(acqs,eofs)])
-        DC['union'] = json.loads(fps.ExportToJson())
+        DC['union'] = [json.loads(fp.ExportToJson()) for fp in fps]
         aoi_ = convert (aoi)
         area = [intersection_area (aoi_, fp) for fp in fps]
         percent = sum(area) / aoi_.Area() * 100.
