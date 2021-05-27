@@ -129,7 +129,7 @@ def track (acq:{}, eof:{})->[()]:
         coord[coord.shape[0]-i-1][:] = topo(burst, cur, far_range, doppler, wvl)
         cur = cur + datetime.timedelta(seconds=1)
         pass
-    DC[acq['id']]['burst'] = coord
+    DC[acq['id']]['burst'] = [list(c) for c in coord]
     return project (coord)
 
 def topo (burst:BurstSLC, time, span, doppler=0, wvl=0.056):
