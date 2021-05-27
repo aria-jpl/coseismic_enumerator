@@ -43,7 +43,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[]):
         md_acqlist = {'aoi_track_id':aoi['id'],
                       'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
                       'dem_type': '',  # do not know
-                      'direction':aoi['metadata']['context']['orbit_direction'],
+                      'direction':aoi['metadata']['event_metadata']['orbit_direction'],
                       'endtime': '',
                       'job_priority':3,  # given to me as sufficient
                       'identifier':'',  # do not know
@@ -56,7 +56,7 @@ def _intersected (aoi:{}, primaries:[], secondaries:[]):
                       'slave_scenes':[],
                       'starttime': '',
                       'tags':['s1-coseismic-gunw'],
-                      'track_number':aoi['metadata']['context']['track_number'],
+                      'track_number':aoi['metadata']['event_metadata']['track_number'],
                       'union_geojson':aoi['location']}
         for index in set(aoi[ EP]['pre']['index']):
             ends = [pacq['endtime']]
@@ -107,7 +107,7 @@ def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
         md_acqlist = {'aoi_track_id':aoi['id'],
                       'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
                       'dem_type': '',  # do not know
-                      'direction':aoi['metadata']['context']['orbit_direction'],
+                      'direction':aoi['metadata']['event_metadata']['orbit_direction'],
                       'endtime': '',
                       'job_priority':3,  # given to me as sufficient
                       'identifier':'',  # do not know
@@ -120,7 +120,7 @@ def _significantly_intersected (aoi:{}, primaries:[], secondaries:[]):
                       'slave_scenes':[],
                       'starttime': '',
                       'tags':['s1-coseismic-gunw'],
-                      'track_number':aoi['metadata']['context']['track_number'],
+                      'track_number':aoi['metadata']['event_metadata']['track_number'],
                       'union_geojson':aoi['location']}
         for index in set(aoi[ EP]['pre']['index']):
             ends = [pacq['endtime']]
@@ -165,7 +165,7 @@ def _singular (aoi:{}, primaries:[], secondaries:[]):
     md_acqlist = {'aoi_track_id':aoi['id'],
                   'creation':datetime.datetime.utcnow().isoformat('T','seconds')+'Z',
                   'dem_type': '',  # do not know
-                  'direction':aoi['metadata']['context']['orbit_direction'],
+                  'direction':aoi['metadata']['event_metadata']['orbit_direction'],
                   'endtime': '',
                   'job_priority':3,  # given to me as sufficient
                   'identifier':'',  # do not know
@@ -178,7 +178,7 @@ def _singular (aoi:{}, primaries:[], secondaries:[]):
                   'slave_scenes':[],
                   'starttime': '',
                   'tags':['s1-coseismic-gunw'],
-                  'track_number':aoi['metadata']['context']['track_number'],
+                  'track_number':aoi['metadata']['event_metadata']['track_number'],
                   'union_geojson':aoi['location']}
     for index in set(aoi[ EP]['pre']['index']):
         ends = [pacq['endtime'] for pacq in primaries]
@@ -217,7 +217,7 @@ def load (aoi:{}, primaries:[], secondaries:[]):
 
     This is going to send jobs to a Localizer queue.
     '''
-    i = 1
+    i = 3
     if i == 1: _intersected (aoi, primaries, secondaries)
     elif i == 2:
         _significantly_intersected (aoi, primaries, secondaries)

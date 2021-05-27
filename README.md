@@ -106,3 +106,29 @@ Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
     - There is no manual or HySDS method for retrying the enumerator if and when it fails. The nature of cron is that it runs periodically. Hence, if a run of the enumerator fails due to a missing orbit, then it will try again on the next period until it the orbit file arrives.
 6. How do I find the AOITrack ID associated with a failed Enumerator job?
     - Open up the Enumerator's associated HySDS job `_stdout.txt` file and look for the last AOITrack referenced in that file
+7. If the enumerator fails on a particular aoitrack-earthquake, is any data persisted to ES as a result (and would that impact the next iteration / processing job)?  
+    - No: HySDS does not ingest any data if detects an error.
+8. Does the enumerator process aoitrack-earthquakes via a “round-robin” model - in that it will process the “next” aoitrack-earthquake dataset by starting date, or by some other heuristic?  
+    - It processes them in the order returned from ES. No special sorts or other ordering requests are made to ES when requesting the AOI tracks. There is no reason to sort since HySDS sees it as a bulk operation.
+9. What are the input datasets of the enumerator?
+    - An *AOITrack* Dataset, which is a partition of the original Earthquake polygon into Sentinel-1 tracks. Each of these datasets has further water masked land.
+11. What are the ouputs of the enumerator?
+    - The outputs are *acquisition lists*. These are composed of a list of reference images (in the current implementation, there will always be 1) and a list of secondary images. These images are Single Look Complex (SLC) images. Each list is collected on two separate dates and will be what is used as input for the interferogram processing. More specifically, each acquisition list will correspond to a unique interferogram.
+12. What are the post- and pre-index used in the enumerator and its relation to its acquisition lists outputs (including naming)? For a given earthquake, the requirements dictate that we have *three* dates before the earthquake and *three* dates after the earthquake for comparison and generating interferograms.  
+    - The event is considered index 0. The pre-index is then the crossing of the AOI with the track number defined in the AOI prior (pre) to the event. The post-index is similar but after the event. In both cases, the value of 1 is closest to the event with larger numbers moving further away in their respective directions. How many previous and post event crossings there are is configurable, `prior_count` and `post_count`, at run time with the default being 3 and 3.
+14. For each AOITrack, how many acquisition lists can we expect?  
+    - There is no fixed expectation. It is a function of the AOI size, which Sentinel (A or B) cross the AOI, which [acquisition list algorithm](https://github.com/aria-jpl/coseismic_enumerator/blob/0874f97c465399ec781b72227ddf7ed46315e93f/slc.py#L201-L205) is being used, and configuration like `prior_count` and `post_count` that determine how many acquisition lists will be generated for an AOI over all time. Given the default configuration including `_intersected()` and that most AOIs should be smaller than an acquisition footprint, one would expect 21 to 24 acquisition lists for all 9 pre/post pairs. However it could be as small as 18 and as large as 27 if only Sentinel A or B crossings are found.
+15. How do we change the minimum coverage requirement over an AOITrack for the generation? What is the default value?  
+     - Cannot change it for any individual AOI track. It is a global threshold for all AOI tracks. In theory, if there are no active AOI tracks, then:  
+         1. pause the cron job
+         2. mark the AOI track that should be done with a different coverage threshold as actyive (adjuct endtime)
+         3. run on-demad with desired coverage threshold (it is a parameter on the on-demand form)
+         4. when job is complete, turn cron back on
+     - Set the 'coverage_threshold_percent' as defined in [docker/hysds-io.json.enumerator](https://github.com/aria-jpl/coseismic_enumerator/blob/1a6cd0616505b69d3e5eff935bd89acd233bb434/docker/hysds-io.json.enumerator#L7-L11) whose default value is 90% coverage.
+16. How do we know if there is an AOITrack without enough coverage?
+    - Check the `_stdout.txt` for a job and search for the `AOITrack`. Check out [this issue](https://github.com/aria-jpl/coseismic_enumerator/issues/21#issue-874874472).
+17. How do I ensure the Enumerator reprocesses a given AOITrack?  
+    1. Change the enddate to the future.
+    2. If `processing_event` exists in the AOI also need to do one of these two items.  
+        1. Run the enumerator On-Demand with `reset_all` set to non-zero (this will only change active AOIs - not all AOIs)
+        2. While setting the enddate to the future, delete `event_processing` from the AOI
