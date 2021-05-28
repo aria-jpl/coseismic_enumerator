@@ -18,8 +18,7 @@ from mpl_toolkits.basemap import Basemap
 def convert (acq, eof=None):
     '''convert an object with ['location'] to a shapely polygon'''
     if eof:
-        location = {'coordinates':[track (acq, eof)], 'type':'Polygon'}
-        poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(location))
+        poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(track (acq, eof)))
     else: poly = osgeo.ogr.CreateGeometryFromJson(json.dumps(get_location(acq)))
     return poly
 
@@ -127,7 +126,7 @@ def track_deprecated (acq:{}, eof:{})->[()]:
         coord[coord.shape[0]-i-1][:] = topo(burst, cur, far_range, doppler, wvl)
         cur = cur + datetime.timedelta(seconds=1)
         pass
-    return project (coord)
+    return {'coordinates':[project (coord)], 'type':'Polygon'}
 
 def topo (burst:BurstSLC, time, span, doppler=0, wvl=0.056):
     '''Compute Lat/Lon from inputs'''
