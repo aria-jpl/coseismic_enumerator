@@ -92,9 +92,21 @@ def prune (aoi, acqs, eofs):
     return
 
 def track (acq:{}, eof:{})->[()]:
+    '''return the footprint within an acquisition
+
+    return [(lat,lon)]
+    '''
+    return get_location(acq)['coordinates']
+
+def track_deprecated (acq:{}, eof:{})->[()]:
     '''compute the footprint within an acquisition
 
     return [(lat,lon)]
+
+    ISSUE 26:
+    Because the ISCE seems to be shifting the footprint out of the AOI causing
+    the coverage to fail by 20% deprecating this function and using a function
+    that simply returns the acquisition footprint.
     '''
     # generating an Sentinel-1 burst dummy file populated with state vector
     # information for the requested time-period
