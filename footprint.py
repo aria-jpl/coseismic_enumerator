@@ -91,7 +91,7 @@ def prune (aoi, acqs, eofs):
     eofs.extend (eofs_intersected)
     return
 
-def track (acq:{}, eof:{})->[()]:
+def track (acq:{}, _eof:{})->[()]:
     '''return the footprint within an acquisition
 
     return [(lat,lon)]
