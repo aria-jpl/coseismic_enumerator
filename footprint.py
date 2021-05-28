@@ -95,7 +95,7 @@ def track (acq:{}, _eof:{})->[()]:
 
     return [(lat,lon)]
     '''
-    return get_location(acq)['coordinates']
+    return get_location(acq)
 
 def track_deprecated (acq:{}, eof:{})->[()]:
     '''compute the footprint within an acquisition
