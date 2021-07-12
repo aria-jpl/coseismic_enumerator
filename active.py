@@ -61,7 +61,7 @@ def fill (aoi):
 
         eofs = [orbit.fetch (acq) for acq in acqs]
         begin = begin - step
-        repeat = datetime.timedelta(days=7)
+        repeat = datetime.timedelta(days=6)
         step = datetime.timedelta(days=5)
 
         if acqs and enough_coverage (aoi, acqs, eofs):
@@ -146,7 +146,7 @@ def process (aoi):
             begin = datetime.datetime.fromisoformat(aoi[EP]['previous'][:-1])
         else: begin += step
 
-        repeat = datetime.timedelta(days=7)
+        repeat = datetime.timedelta(days=6)
         step = datetime.timedelta(days=5)
         pass
     return
